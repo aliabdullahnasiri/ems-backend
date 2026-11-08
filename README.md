@@ -1,6 +1,6 @@
-# DawaMIS Backend
+# EMS Backend (Exchange Management System)
 
-The asynchronous REST API for DawaMIS, a pharmacy management system. This repository currently provides the account, security, and organization foundation: authentication, user profiles, device sessions, email verification, password recovery, two-factor authentication, organization membership, and organization-scoped permissions.
+The asynchronous REST API for the Exchange Management System (EMS). This repository provides the core infrastructure for account management, security, and organizational structure: authentication, user profiles, device sessions, email verification, password recovery, two-factor authentication, organization membership, and organization-scoped permissions.
 
 Medicine catalogs, inventory, purchases, sales, invoicing, and supplier workflows are not implemented in the current API.
 
@@ -50,8 +50,8 @@ Run commands from the repository root so `.env`, migration configuration, and tr
 ### 2. Install dependencies
 
 ```bash
-git clone https://github.com/aliabdullahnasiri/dawamis-backend.git
-cd dawamis-backend
+git clone https://github.com/aliabdullahnasiri/ems-backend.git
+cd ems-backend
 uv sync --all-groups
 cp .env.example .env
 ```
@@ -71,7 +71,7 @@ SMTP_USERNAME=
 SMTP_PASSWORD=
 SMTP_USE_TLS=false
 MAIL_FROM_EMAIL=no-reply@example.com
-MAIL_FROM_NAME=Dawamis
+MAIL_FROM_NAME=EMS
 FRONTEND_URL=http://localhost:3000
 ```
 
@@ -132,7 +132,7 @@ Settings are defined in [src/app/core/settings.py](src/app/core/settings.py). En
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `APP_NAME` | `DawaMIS API` | API title and Celery application name |
+| `APP_NAME` | `EMS API` | API title and Celery application name |
 | `APP_DESCRIPTION` | Backend API description | OpenAPI description |
 | `APP_VERSION` | `1.0.0` | OpenAPI application version |
 | `APP_ENV` | `development` | Environment setting |
@@ -147,15 +147,15 @@ The template uses MySQL while the settings fallback uses SQLite. MySQL is the do
 
 ### Email
 
-| Variable | Default |
-| --- | --- |
+| Variable | Default | Purpose |
+| --- | --- | --- |
 | `SMTP_HOST` | `smtp.example.com` |
 | `SMTP_PORT` | `587` |
 | `SMTP_USERNAME` | `username@example.com` |
 | `SMTP_PASSWORD` | Development placeholder |
 | `SMTP_USE_TLS` | `true` |
-| `MAIL_FROM_EMAIL` | `noreply@dawamis.com` |
-| `MAIL_FROM_NAME` | `Dawamis` |
+| `MAIL_FROM_EMAIL` | `noreply@ems.com` |
+| `MAIL_FROM_NAME` | `EMS` |
 
 `SMTP_USE_TLS=true` enables STARTTLS. SMTP authentication occurs when both username and password are nonempty. The current delivery implementation uses SMTP, not the Mailtrap API, although its SDK is a dependency.
 
