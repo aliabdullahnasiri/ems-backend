@@ -1,19 +1,19 @@
-# CLAUDE.md — Dawamis Backend
+# CLAUDE.md — EMS Backend
 
 Consolidated project context and implementation guidance from `PROJECT_CONTEXT.md` and `.claude/skills/{api,schema,service,test}-implementation/SKILL.md`. The project context review date below is inherited from the source; consolidation does not imply a new code review.
 
 
 This document is a working guide for developers and AI assistants contributing to this repository. Read it before editing code. The source code, tests, migrations, and current environment are authoritative if anything here conflicts with them.
 
-- Repository: https://github.com/aliabdullahnasiri/dawamis-backend
+- Repository: https://github.com/aliabdullahnasiri/ems-backend
 - Default branch: `main`
 - Reviewed: 2026-10-25
 
 ## 1. Project purpose and current scope
 
-Dawamis (DawaMIS) is the backend API for a pharmacy-management system. The current repository focuses on the API foundation, users, authentication, sessions, email verification, password reset, two-factor authentication, security events, organization/branch/role/permission models, localization, and background workers.
+EMS (Exchange Management System) is the backend API for an exchange management system. The current repository focuses on the API foundation, users, authentication, sessions, email verification, password reset, two-factor authentication, security events, organization/branch/role/permission models, localization, and background workers.
 
-Do not assume all pharmacy workflows (medicines, stock, purchases, invoices, suppliers, and similar modules) are implemented here just because they belong to the wider product vision. Inspect actual routes, services, models, and tests before extending a feature.
+Do not assume all exchange workflows (medicines, stock, purchases, invoices, suppliers, and similar modules) are implemented here just because they belong to the wider product vision. Inspect actual routes, services, models, and tests before extending a feature.
 
 ## 2. Technology stack
 
@@ -293,7 +293,7 @@ Before finishing:
 Source: `.claude/skills/api-implementation/SKILL.md`.
 
 
-This skill guides the creation of API endpoints in the Dawamis backend. The API layer is responsible for routing, request validation (via schemas), dependency injection, and coordinating service calls.
+This skill guides the creation of API endpoints in the EMS backend. The API layer is responsible for routing, request validation (via schemas), dependency injection, and coordinating service calls.
 
 ### API Architecture
 
@@ -373,7 +373,7 @@ async def update_me(
 Source: `.claude/skills/schema-implementation/SKILL.md`.
 
 
-This skill guides the creation of Pydantic schemas for the Dawamis backend. Schemas define the API contracts, ensuring strict validation of incoming requests and consistent shaping of outgoing responses.
+This skill guides the creation of Pydantic schemas for the EMS backend. Schemas define the API contracts, ensuring strict validation of incoming requests and consistent shaping of outgoing responses.
 
 ### Schema Architecture
 
@@ -461,7 +461,7 @@ class OrganizationResponse(BaseResponseModel[OrganizationData]):
 Source: `.claude/skills/service-implementation/SKILL.md`.
 
 
-This skill guides the creation of business logic services in the Dawamis backend. Services are the primary layer for reusable business rules, coordinating persistence, security, and background work.
+This skill guides the creation of business logic services in the EMS backend. Services are the primary layer for reusable business rules, coordinating persistence, security, and background work.
 
 ### Service Architecture
 
