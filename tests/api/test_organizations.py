@@ -296,7 +296,9 @@ async def test_member_management_checks_url_organization_permissions(
     target_model = await db_session.get(Organization, target["id"])
     target_model.owner_id = None
     role = Role(name="member-manager", organization_id=selected["id"])
-    permission = Permission(name="organizations.members.manage")
+    permission = await db_session.scalar(
+        select(Permission).where(Permission.name == "organizations.members.manage")
+    )
     candidate = User(
         user_name="candidate", email="candidate@example.com", password_hash="unused"
     )
