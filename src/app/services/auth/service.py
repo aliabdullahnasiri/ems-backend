@@ -84,7 +84,7 @@ class AuthService:
             email=email,
         )
 
-        if user is None or not user.check_password(password):
+        if user is None or not user.is_active or not user.check_password(password):
             raise AuthenticationError(T("auth:invalid_credentials"))
 
         return user
