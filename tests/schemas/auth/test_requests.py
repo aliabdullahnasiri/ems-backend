@@ -1,6 +1,6 @@
 import pytest
-from pydantic import ValidationError
 
+from app.core.exceptions import AppValidationError
 from app.schemas.auth.request import (
     ChangePasswordRequest,
     ForgotPasswordRequest,
@@ -23,12 +23,12 @@ def test_login_request_valid():
 
 
 def test_login_request_invalid_email():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         LoginRequest(email="not-an-email", password="password123")
 
 
 def test_login_request_password_too_long():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         LoginRequest(email="user@example.com", password="a" * 129)
 
 
@@ -54,7 +54,7 @@ def test_register_request_missing_terms():
         "email": "john@example.com",
         "password": "password123",
     }
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         RegisterRequest(**data)
 
 
@@ -64,7 +64,7 @@ def test_verify_email_request_valid():
 
 
 def test_verify_email_request_empty_token():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         VerifyEmailRequest(token="")
 
 
@@ -85,7 +85,7 @@ def test_reset_password_request_valid():
 
 
 def test_reset_password_request_password_too_short():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         ResetPasswordRequest(token="token123", new_password="short")
 
 
@@ -98,7 +98,7 @@ def test_change_password_request_valid():
 
 
 def test_change_password_request_new_password_too_short():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         ChangePasswordRequest(current_password="old", new_password="short")
 
 
@@ -109,13 +109,13 @@ def test_two_factor_enable_request_valid():
 
 def test_two_factor_enable_request_invalid_code():
     # pattern=r"^\d{6}$"
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TOTPEnableRequest(code="12345")  # too short
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TOTPEnableRequest(code="1234567")  # too long
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TOTPEnableRequest(code="abcdef")  # not digits
 
 
@@ -125,7 +125,7 @@ def test_two_factor_verify_request_valid():
 
 
 def test_two_factor_verify_request_too_short():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TOTPVerifyRequest(code="12345")
 
 
@@ -136,5 +136,5 @@ def test_two_factor_disable_request_valid():
 
 
 def test_two_factor_disable_request_invalid_code():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TwoFactorDisableRequest(password="password123", code="12345")
