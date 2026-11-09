@@ -1,0 +1,76 @@
+name: Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Python tests on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ems_test
+          POSTGRES_PASSWORD: ems_test
+          POSTGRES_DB: ems_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ems_test -d ems_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      APP_ENV: test
+      APP_DEBUG: "false"
+      DATABASE_URL: postgresql+asyncpg://ems_test:ems_test@localhost:5432/ems_test
+      REDIS_URL: redis://localhost:6379/0
+      EMS_TEST_POSTGRES: "1"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+
+      - name: Install Python from .python-version
+        run: uv python install
+
+      - name: Install locked dependencies
+        run: uv sync --locked --dev
+
+      - name: Generate temporary test keys
+        run: |
+          uv run --no-sync python - <<'PY'
+          import os
+          import secrets
+          from cryptography.fernet import Fernet
+
+          with open(os.environ["GITHUB_ENV"], "a") as environment:
+              environment.write(f"SECRET_KEY={secrets.token_hex(32)}\n")
+              environment.write(f"JWT_SECRET_KEY={secrets.token_hex(32)}\n")
+              environment.write(f"TOTP_ENCRYPTION_KEY={Fernet.generate_key().decode()}\n")
+          PY
+
+      - name: Compile translations
+        run: uv run --no-sync pybabel compile -d locales
+
+      - name: Run all tests, including PostgreSQL migration checks
+        run: uv run --no-sync pytest -q
