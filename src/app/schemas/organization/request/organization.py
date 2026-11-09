@@ -2,6 +2,7 @@ from typing import Annotated, Self
 
 from pydantic import Field, JsonValue, StringConstraints, model_validator
 
+from app.core.exceptions import NullFieldError
 from app.schemas.base.request import BaseRequestModel
 
 Name = Annotated[
@@ -32,7 +33,7 @@ class UpdateOrganizationRequest(BaseRequestModel):
     def reject_null_fields(self) -> Self:
         for field in self.model_fields_set:
             if getattr(self, field) is None:
-                raise ValueError(f"{field} cannot be null")
+                raise NullFieldError(field)
         return self
 
 
