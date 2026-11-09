@@ -27,6 +27,3 @@ Two-factor authentication failures retain their authentication status codes thro
 the existing authentication error subclasses. Operational failures (uninitialized
 worker/database context, unavailable challenge storage or unsupported serialization)
 use distinct `AppError` subclasses rather than validation status codes.
-
-Add English translations to `locales/en_US/LC_MESSAGES/messages.po`, register keys
-in `locales/messages.pot`, then compile catalogs with `pybabel compile -d locales`.
