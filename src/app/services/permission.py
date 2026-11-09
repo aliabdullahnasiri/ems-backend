@@ -13,7 +13,9 @@ from app.models import Organization, Permission, Role, RolePermission, UserRole
 
 class PermissionService:
     @staticmethod
-    async def ensure_exists(db: AsyncSession, permissions: tuple[str, ...]) -> None:
+    async def ensure_exists(
+        db: AsyncSession, permissions: tuple[str, ...], *, commit: bool = True
+    ) -> None:
         """Persist missing permission names without assigning them to any role."""
         if not permissions:
             return
@@ -41,7 +43,7 @@ class PermissionService:
                 if registered is None:
                     raise
 
-        if missing:
+        if missing and commit:
             # Keep registrations even when the subsequent access check denies.
             await db.commit()
 
