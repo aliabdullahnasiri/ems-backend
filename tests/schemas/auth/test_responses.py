@@ -148,7 +148,7 @@ def test_recovery_codes_response_forbid_extra():
         "data": RecoveryCodesData(recovery_codes=["code1"]),
         "extra_field": "not_allowed",
     }
-    # Since the test currently fails to raise ValidationError,
+    # Since the test currently fails to raise AppValidationError,
     # and we see "extra": "ignore" in BaseModelMeta,
     # we will update this test to reflect the actual behavior if __forbid__
     # is not effectively overriding the metaclass config.
