@@ -2,8 +2,8 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 import pytest
-from pydantic import ValidationError
 
+from app.core.exceptions import AppValidationError
 from app.schemas.user.data import UserData
 
 
@@ -27,12 +27,12 @@ def test_user_data_valid():
 
 
 def test_user_data_missing_required():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         UserData(uuid="550e8400-e29b-41d4-a716-446655440000")
 
 
 def test_user_data_invalid_email():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         UserData(
             uuid="550e8400-e29b-41d4-a716-446655440000",
             user_name="johndoe",
