@@ -8,16 +8,20 @@ from app.models.permission import Permission
 from app.models.recovery_code import RecoveryCode
 from app.models.role import Role
 from app.models.security_event import SecurityEvent
+from app.models.tenant_operations import AuditEvent, FinancialRetry, PrivateAttachment
 from app.models.user import User
 from app.models.user_session import UserSession
 
 __all__ = [
+    "AuditEvent",
     "Base",
     "Branch",
+    "FinancialRetry",
     "Organization",
     "OrganizationMembership",
     "OrganizationUser",
     "Permission",
+    "PrivateAttachment",
     "RecoveryCode",
     "Role",
     "RolePermission",
