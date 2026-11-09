@@ -260,3 +260,38 @@ class RoleService:
         )
         await RoleService.commit(db, organization_id)
         return roles
+
+    @staticmethod
+    async def provision_ems_defaults(db: AsyncSession, organization_id: int) -> None:
+        """Create missing EMS roles without overwriting an existing tenant policy.
+
+        Caller commits with organization creation. No staff member is auto-assigned.
+        """
+        from app.core.permissions import EMS_ROLE_PERMISSIONS
+
+        await PermissionService.ensure_exists(
+            db,
+            tuple({name for names in EMS_ROLE_PERMISSIONS.values() for name in names}),
+            commit=False,
+        )
+        for name, names in EMS_ROLE_PERMISSIONS.items():
+            existing = await db.scalar(
+                select(Role.id).where(
+                    Role.organization_id == organization_id, Role.name == name
+                )
+            )
+            if existing is not None:
+                continue
+            role = Role(organization_id=organization_id, name=name, is_system=True)
+            db.add(role)
+            await db.flush()
+            permissions = await db.scalars(
+                select(Permission).where(Permission.name.in_(names))
+            )
+            db.add_all(
+                [
+                    RolePermission(role_id=role.id, permission_id=p.id)
+                    for p in permissions
+                ]
+            )
+        await PermissionService.invalidate(db, organization_id)
