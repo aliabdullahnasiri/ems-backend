@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.encryption import SecretEncryption
+from app.core.exceptions.authentication import InvalidTwoFactorCodeError
 from app.enums.security import TwoFactorMethod
 from app.models.user import User
 
@@ -79,7 +80,7 @@ class TOTPProvider(TwoFactorProvider):
         secret = SecretEncryption.decrypt(user.two_factor_pending_secret_encrypted)
 
         if not self._verify_totp(secret, code):
-            raise ValueError("Invalid TOTP code")
+            raise InvalidTwoFactorCodeError()
 
         user.two_factor_secret_encrypted = user.two_factor_pending_secret_encrypted
         user.two_factor_pending_secret_encrypted = None
