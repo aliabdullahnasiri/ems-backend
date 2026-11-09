@@ -137,7 +137,8 @@ class SecurityManager:
             The User object if found, otherwise None.
         """
         try:
-            return await UserService.get_by_uuid(db, uuid)
+            user = await UserService.get_by_uuid(db, uuid)
+            return user if user.is_active else None
         except UserNotFound, NoResultFound:
             return None
 
