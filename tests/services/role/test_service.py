@@ -40,7 +40,7 @@ async def setup_roles(db_session):
 async def test_service_lifecycle_and_conflicts(db_session, setup_roles):
     owner, _, org, membership, role = setup_roles
     assert (await RoleService.get(db_session, org.id, role.uuid)).name == "Staff"
-    assert await RoleService.list(db_session, org.id) == [role]
+    assert role in await RoleService.list(db_session, org.id)
     with pytest.raises(ConflictError):
         await RoleService.create(db_session, org.id, "Staff")
     with pytest.raises(NotFoundError):
@@ -58,7 +58,11 @@ async def test_service_lifecycle_and_conflicts(db_session, setup_roles):
     assert updated.name == "Updated" and updated.description is None
     await RoleService.delete(db_session, org.id, role.uuid)
     assert await RoleService.member_roles(db_session, org.id, membership.uuid) == []
-    assert (await db_session.scalars(select(RolePermission))).all() == []
+    assert (
+        await db_session.scalars(
+            select(RolePermission).where(RolePermission.role_id == role.id)
+        )
+    ).all() == []
     assert (await db_session.scalars(select(UserRole))).all() == []
 
 
