@@ -104,9 +104,11 @@ class OrganizationService:
         db.add(organization)
         if owner:
             organization.memberships = [OrganizationUser(user_id=owner.id)]
-        await OrganizationService.commit(db)
-        await db.refresh(organization)
+        await db.flush()
+        from app.services.role import RoleService
 
+        await RoleService.provision_ems_defaults(db, organization.id)
+        await OrganizationService.commit(db)
         return organization
 
     @staticmethod
@@ -528,5 +530,6 @@ class OrganizationService:
                 )
                 .values(organization_id=None)
             )
+        await PermissionService.invalidate(db, organization.id)
         await db.commit()
         return membership
