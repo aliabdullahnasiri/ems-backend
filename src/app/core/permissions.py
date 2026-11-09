@@ -35,6 +35,8 @@ PERMISSION_DEFINITIONS: tuple[str, ...] = (
 
 
 EMS_PERMISSIONS: tuple[str, ...] = (
+    "attachment:read",
+    "attachment:manage",
     "settings:read",
     "settings:update",
     "cashbox:read",
@@ -71,6 +73,8 @@ PERMISSION_DEFINITIONS += EMS_PERMISSIONS
 EMS_ROLE_PERMISSIONS: dict[str, tuple[str, ...]] = {
     "owner": PERMISSION_DEFINITIONS,
     "cashier": (
+        "attachment:read",
+        "attachment:manage",
         "settings:read",
         "cashbox:read",
         "contact:read",
@@ -87,6 +91,8 @@ EMS_ROLE_PERMISSIONS: dict[str, tuple[str, ...]] = {
         "day_closing:create",
     ),
     "accountant": (
+        "attachment:read",
+        "attachment:manage",
         "settings:read",
         "cashbox:read",
         "contact:read",
