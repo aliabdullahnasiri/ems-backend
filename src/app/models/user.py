@@ -23,6 +23,10 @@ class User(Base):
 
     __hidden_fields__: ClassVar[set[str]] = {"password_hash"}
 
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default="true", nullable=False
+    )
+
     first_name: Mapped[str | None] = mapped_column(
         String(50),
         nullable=True,
