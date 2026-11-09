@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.config import settings
-from app.core.i18n.types import T
+from app.core.exceptions.request import WorkerDatabaseUnavailableError
 
 # The event loop used by the worker process to run asynchronous tasks.
 WorkerLoop: asyncio.AbstractEventLoop | None = None
@@ -44,6 +44,7 @@ def init_worker_database(**kwargs: object) -> None:
         pool_size=5,
         max_overflow=0,
         pool_pre_ping=True,
+        hide_parameters=True,
     )
 
     WorkerLocalSession = async_sessionmaker(
@@ -62,10 +63,10 @@ async def get_worker_db() -> AsyncIterator[AsyncSession]:
         An AsyncSession instance for database operations.
 
     Raises:
-        RuntimeError: If the worker database session factory has not been initialized.
+        WorkerDatabaseUnavailableError: If the worker database is not initialized.
     """
     if WorkerLocalSession is None:
-        raise RuntimeError(T("worker:database_not_initialized"))
+        raise WorkerDatabaseUnavailableError()
 
     async with WorkerLocalSession() as session:
         yield session
