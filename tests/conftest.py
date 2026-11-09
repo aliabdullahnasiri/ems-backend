@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import Any
 from unittest.mock import patch
 
@@ -88,7 +89,7 @@ def app():
 
 @pytest_asyncio.fixture
 async def client(
-    app: FastAPI, db_session: AsyncSession, fake_useragent: str, mock_redis
+    app: FastAPI, db_session: AsyncSession, fake_useragent: str, mock_redis, monkeypatch
 ):
     """
     Provides an asynchronous HTTPX client for making requests to the API.
@@ -100,6 +101,13 @@ async def client(
 
     from app.api.dependencies.redis import get_redis
 
+    @asynccontextmanager
+    async def test_session_context():
+        yield db_session
+
+    monkeypatch.setattr(
+        "app.api.middleware.database.SessionLocal", test_session_context
+    )
     app.dependency_overrides[get_redis] = lambda: mock_redis
     app.dependency_overrides[get_db] = override_get_db
 
