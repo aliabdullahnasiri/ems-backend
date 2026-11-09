@@ -1,6 +1,10 @@
 import pytest
 
-from app.core.exceptions import AuthorizationError, NotFoundError
+from app.core.exceptions import (
+    AuthorizationError,
+    NotFoundError,
+    OrganizationOwnershipError,
+)
 from app.core.permissions import EMS_ROLE_PERMISSIONS
 from app.models import Branch, User
 from app.services.organization import OrganizationService
@@ -27,7 +31,7 @@ async def test_context_isolates_records_and_revalidates_membership(db_session):
         await cb.shop(db_session, shop.id)
     assert ca.key("retry", "same") != cb.key("retry", "same")
     assert ca.audit_values()["organization_id"] == a.id
-    with pytest.raises(ValueError):
+    with pytest.raises(OrganizationOwnershipError):
         ca.new(Branch, name="Spoof", organization_id=b.id)
     b.is_active = False
     await db_session.commit()
