@@ -177,7 +177,7 @@ async def test_invalid_create_requests(client, identity, payload):
     response = await client.post(
         f"/api/v1/organizations/{org['uuid']}/roles", json=payload
     )
-    assert response.status_code == 433, response.text
+    assert response.status_code == 422, response.text
 
 
 @pytest.mark.asyncio
@@ -192,7 +192,7 @@ async def test_invalid_update_and_permission_requests(client, identity):
         {"is_system": True},
         {"description": "x" * 256},
     ):
-        assert (await client.patch(role_path, json=body)).status_code == 433
+        assert (await client.patch(role_path, json=body)).status_code == 422
     for body in (
         {},
         {"permissions": None},
@@ -201,9 +201,9 @@ async def test_invalid_update_and_permission_requests(client, identity):
     ):
         assert (
             await client.put(role_path + "/permissions", json=body)
-        ).status_code == 433
+        ).status_code == 422
     assert (await client.get(path + f"/roles/{uuid4()}")).status_code == 404
-    assert (await client.get(path + "/roles/invalid")).status_code == 433
+    assert (await client.get(path + "/roles/invalid")).status_code == 422
 
 
 @pytest.mark.asyncio
