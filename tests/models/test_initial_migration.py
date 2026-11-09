@@ -31,6 +31,7 @@ def migrated_database() -> Iterator[tuple[sa.Connection, ModuleType]]:
             connection.exec_driver_sql("PRAGMA foreign_keys=ON")
             with Operations.context(MigrationContext.configure(connection)):
                 migration.upgrade()
+                scripts.get_revision("head").module.upgrade()
                 yield connection, migration
     finally:
         engine.dispose()
@@ -42,10 +43,15 @@ def test_upgrade_matches_models_and_downgrade_removes_schema(migrated_database):
     context = MigrationContext.configure(connection)
     assert compare_metadata(context, Base.metadata) == []
 
+    from alembic.script import ScriptDirectory
+
+    scripts = ScriptDirectory("alembic")
+    scripts.get_revision("head").module.downgrade()
     migration.downgrade()
     assert sa.inspect(connection).get_table_names() == []
 
     migration.upgrade()
+    scripts.get_revision("head").module.upgrade()
     assert compare_metadata(context, Base.metadata) == []
 
 
