@@ -6,6 +6,7 @@ from fastapi import Depends
 from sqlalchemy import select
 
 from app.api.dependencies.auth import current_user_can
+from app.core.i18n.types import T
 from app.models import (
     Organization,
     OrganizationMembership,
@@ -60,7 +61,9 @@ async def test_join_request_emails_owner_without_granting_membership(
         "email": requester.email,
     }
     assert message["to"] == owner.email
-    assert message["subject"] == "Organization membership request"
+    expected_subject = T("emails:organization_join_request_subject")
+    assert expected_subject != "emails:organization_join_request_subject"
+    assert message["subject"] == expected_subject
     assert message["organization"] == {
         "name": organization.name,
         "uuid": str(organization.uuid),
@@ -76,7 +79,7 @@ async def test_join_request_emails_owner_without_granting_membership(
     )
     assert requester.email in html
     assert "&lt;b&gt;Pharmacy&lt;/b&gt;" in html
-    assert "Organization membership request" in html
+    assert expected_subject in html
     assert "emails:organization_" not in html
     assert session.organization_id is None
     assert (
