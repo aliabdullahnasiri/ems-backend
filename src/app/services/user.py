@@ -230,5 +230,19 @@ class UserService:
             select(Organization.id).where(Organization.owner_id == user.id).limit(1)
         ):
             raise ConflictError(message=T("organization:transfer_before_user_delete"))
-        await db.delete(user)
+        from app.services.history import HistoryService
+
+        if await HistoryService.has_actor_history(db, user_id=user.id):
+            user.is_active = False
+            from sqlalchemy import update
+
+            from app.models import UserSession
+
+            await db.execute(
+                update(UserSession)
+                .where(UserSession.user_id == user.id)
+                .values(organization_id=None)
+            )
+        else:
+            await db.delete(user)
         await db.commit()
