@@ -213,6 +213,18 @@ class OrganizationService:
         """
         Delete an organization.
         """
+        from app.services.history import HistoryService
+
+        if await HistoryService.has_organization_history(db, organization.id):
+            organization.is_active = False
+            await PermissionService.invalidate(db, organization.id)
+            await db.execute(
+                update(UserSession)
+                .where(UserSession.organization_id == organization.id)
+                .values(organization_id=None)
+            )
+            await db.commit()
+            return
         await db.execute(
             update(UserSession)
             .where(UserSession.organization_id == organization.id)
@@ -281,7 +293,12 @@ class OrganizationService:
             if organization.owner_id == user_id:
                 raise ConflictError(message=T("organization:owner_membership_required"))
             await OrganizationService.clear_member_access(db, organization_id, user_id)
-            await db.delete(membership)
+            from app.services.history import HistoryService
+
+            if await HistoryService.has_actor_history(db, membership_id=membership.id):
+                membership.is_active = False
+            else:
+                await db.delete(membership)
             await db.commit()
 
     @staticmethod
@@ -298,11 +315,13 @@ class OrganizationService:
         """
         membership = (
             await db.execute(
-                select(OrganizationUser).where(
+                select(OrganizationUser)
+                .where(
                     OrganizationUser.user_id == user.id,
                     OrganizationUser.organization_id == organization.id,
                     OrganizationUser.is_active == True,
                 )
+                .execution_options(populate_existing=True)
             )
         ).scalar_one_or_none()
 
@@ -338,12 +357,17 @@ class OrganizationService:
     async def get_branch_by_id(
         db: AsyncSession,
         branch_id: int,
+        organization_id: int,
     ) -> Branch:
         """
         Return a branch by its ID.
         """
         branch = (
-            await db.execute(select(Branch).where(Branch.id == branch_id))
+            await db.execute(
+                select(Branch).where(
+                    Branch.id == branch_id, Branch.organization_id == organization_id
+                )
+            )
         ).scalar_one_or_none()
 
         if branch is None:
@@ -355,6 +379,7 @@ class OrganizationService:
     async def update_branch(
         db: AsyncSession,
         branch: Branch,
+        organization_id: int,
         name: str | None = None,
         address: str | None = None,
         is_active: bool | None = None,
@@ -362,6 +387,9 @@ class OrganizationService:
         """
         Update branch details.
         """
+        branch = await OrganizationService.get_branch_by_id(
+            db, branch.id, organization_id
+        )
         if name is not None:
             branch.name = name
         if address is not None:
@@ -377,11 +405,30 @@ class OrganizationService:
     async def delete_branch(
         db: AsyncSession,
         branch: Branch,
+        organization_id: int,
     ) -> None:
         """
         Delete a branch.
         """
-        await db.delete(branch)
+        branch = await OrganizationService.get_branch_by_id(
+            db, branch.id, organization_id
+        )
+        from app.models import PrivateAttachment
+
+        if (
+            await db.scalar(
+                select(PrivateAttachment.id)
+                .where(
+                    PrivateAttachment.organization_id == organization_id,
+                    PrivateAttachment.shop_id == branch.id,
+                )
+                .limit(1)
+            )
+            is not None
+        ):
+            branch.is_active = False
+        else:
+            await db.delete(branch)
         await db.commit()
 
     @staticmethod
