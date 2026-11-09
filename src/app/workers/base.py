@@ -4,7 +4,7 @@ from typing import Any, Self
 from celery import Task
 
 import app.core.worker_database as worker_db
-from app.core.i18n.types import T
+from app.core.exceptions.request import WorkerLoopUnavailableError
 from app.workers.meta import WorkerMeta
 
 
@@ -42,10 +42,10 @@ class BaseWorker(ABC, Task, metaclass=WorkerMeta):
             **kwargs: Keyword arguments passed to the task.
 
         Raises:
-            RuntimeError: If the worker's event loop has not been initialized.
+            WorkerLoopUnavailableError: If the worker event loop is not initialized.
         """
         if worker_db.WorkerLoop is None:
-            raise RuntimeError(T("worker:event_loop_not_initialized"))
+            raise WorkerLoopUnavailableError()
 
         worker_db.WorkerLoop.run_until_complete(self._run(*args, **kwargs))
 
