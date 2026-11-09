@@ -1,8 +1,8 @@
 from datetime import date
 
 import pytest
-from pydantic import ValidationError
 
+from app.core.exceptions import AppValidationError
 from app.schemas.user import CreateUserRequest, UpdateUserRequest
 
 
@@ -23,7 +23,7 @@ def test_create_user_request_valid():
 
 
 def test_create_user_request_missing_required():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         CreateUserRequest(user_name="johndoe")
 
 
@@ -33,7 +33,7 @@ def test_create_user_request_password_too_short():
         "email": "john@example.com",
         "password": "short",
     }
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         CreateUserRequest(**data)
 
 
@@ -43,7 +43,7 @@ def test_create_user_request_invalid_email():
         "email": "not-an-email",
         "password": "password123",
     }
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         CreateUserRequest(**data)
 
 
@@ -54,7 +54,7 @@ def test_create_user_request_name_too_long():
         "email": "john@example.com",
         "password": "password123",
     }
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         CreateUserRequest(**data)
 
 
