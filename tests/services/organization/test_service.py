@@ -185,19 +185,21 @@ async def test_branch_management(db_session: AsyncSession):
     assert branch.name == "Main Branch"
 
     # Get branch
-    retrieved = await OrganizationService.get_branch_by_id(db_session, branch.id)
+    retrieved = await OrganizationService.get_branch_by_id(
+        db_session, branch.id, org.id
+    )
     assert retrieved.id == branch.id
 
     # Update branch
     updated = await OrganizationService.update_branch(
-        db_session, branch, name="New Branch Name"
+        db_session, branch, org.id, name="New Branch Name"
     )
     assert updated.name == "New Branch Name"
 
     # Delete branch
-    await OrganizationService.delete_branch(db_session, branch)
+    await OrganizationService.delete_branch(db_session, branch, org.id)
     with pytest.raises(NotFoundError):
-        await OrganizationService.get_branch_by_id(db_session, branch.id)
+        await OrganizationService.get_branch_by_id(db_session, branch.id, org.id)
 
 
 @pytest.mark.asyncio
