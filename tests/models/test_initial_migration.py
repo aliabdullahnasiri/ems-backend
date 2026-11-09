@@ -31,7 +31,10 @@ def migrated_database() -> Iterator[tuple[sa.Connection, ModuleType]]:
             connection.exec_driver_sql("PRAGMA foreign_keys=ON")
             with Operations.context(MigrationContext.configure(connection)):
                 migration.upgrade()
-                scripts.get_revision("head").module.upgrade()
+                for followup in reversed(
+                    list(scripts.iterate_revisions("head", "68ddef4751ec"))
+                ):
+                    followup.module.upgrade()
                 yield connection, migration
     finally:
         engine.dispose()
@@ -46,12 +49,14 @@ def test_upgrade_matches_models_and_downgrade_removes_schema(migrated_database):
     from alembic.script import ScriptDirectory
 
     scripts = ScriptDirectory("alembic")
-    scripts.get_revision("head").module.downgrade()
+    for followup in scripts.iterate_revisions("head", "68ddef4751ec"):
+        followup.module.downgrade()
     migration.downgrade()
     assert sa.inspect(connection).get_table_names() == []
 
     migration.upgrade()
-    scripts.get_revision("head").module.upgrade()
+    for followup in reversed(list(scripts.iterate_revisions("head", "68ddef4751ec"))):
+        followup.module.upgrade()
     assert compare_metadata(context, Base.metadata) == []
 
 
@@ -139,4 +144,82 @@ def test_scoped_roles_and_permission_grants(migrated_database):
         sa.select(grants.c.role_id, grants.c.permission_id)
     ).all() == [(2, 1)]
     assert connection.execute(sa.select(permissions.c.name)).all() == [("read",)]
+    assert connection.exec_driver_sql("PRAGMA foreign_key_check").all() == []
+
+
+def test_business_ownership_constraints_and_history_retention(migrated_database):
+    """Composite FKs prevent spoofed tenants/actors even with direct SQL."""
+    connection, _ = migrated_database
+    t = Base.metadata.tables
+    for ident in (1, 2):
+        connection.execute(
+            t["users"]
+            .insert()
+            .values(
+                id=ident,
+                user_name=f"actor-{ident}",
+                email=f"actor-{ident}@example.com",
+                password_hash="unused",
+            )
+        )
+        connection.execute(
+            t["organizations"]
+            .insert()
+            .values(id=ident, name=f"Org {ident}", slug=f"org-{ident}")
+        )
+        connection.execute(
+            t["organization_users"]
+            .insert()
+            .values(id=ident, organization_id=ident, user_id=ident)
+        )
+        connection.execute(
+            t["branches"]
+            .insert()
+            .values(id=ident, organization_id=ident, name=f"Shop {ident}")
+        )
+    with pytest.raises(IntegrityError), connection.begin_nested():
+        connection.execute(
+            t["private_attachments"]
+            .insert()
+            .values(
+                organization_id=1,
+                shop_id=2,
+                file_name="a.pdf",
+                content_type="application/pdf",
+                content=b"%PDF-",
+            )
+        )
+    with pytest.raises(IntegrityError), connection.begin_nested():
+        connection.execute(
+            t["audit_events"]
+            .insert()
+            .values(
+                organization_id=1,
+                membership_id=2,
+                user_id=2,
+                action="test",
+                record_type="shop",
+                record_id=1,
+            )
+        )
+    connection.execute(
+        t["audit_events"]
+        .insert()
+        .values(
+            id=1,
+            organization_id=1,
+            membership_id=1,
+            user_id=1,
+            action="test",
+            record_type="shop",
+            record_id=1,
+        )
+    )
+    for table in ("users", "organizations", "organization_users"):
+        with pytest.raises(IntegrityError), connection.begin_nested():
+            connection.execute(t[table].delete().where(t[table].c.id == 1))
+    with pytest.raises(IntegrityError), connection.begin_nested():
+        connection.execute(t["audit_events"].update().values(reason="rewrite"))
+    with pytest.raises(IntegrityError), connection.begin_nested():
+        connection.execute(t["audit_events"].delete())
     assert connection.exec_driver_sql("PRAGMA foreign_key_check").all() == []
