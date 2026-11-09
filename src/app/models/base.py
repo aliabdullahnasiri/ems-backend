@@ -8,6 +8,8 @@ from sqlalchemy import DateTime, inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import Uuid
 
+from app.core.exceptions.request import SerializationError
+
 
 class DeclarativeBaseMeta(type(DeclarativeBase)):
     """
@@ -89,9 +91,7 @@ class Base(DeclarativeBase, metaclass=DeclarativeBaseMeta):
         elif isinstance(value, (date, datetime)):
             return value.isoformat()
 
-        raise TypeError(
-            f"Object of type {type(value).__name__} " "is not JSON serializable"
-        )
+        raise SerializationError()
 
     def __repr__(self: Self) -> str:
         return (
