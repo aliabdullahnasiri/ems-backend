@@ -7,6 +7,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.exceptions import UnsupportedTwoFactorMethodError
 from app.core.exceptions.authentication import (
     InvalidTwoFactorCodeError,
     InvalidTwoFactorPasswordError,
@@ -37,7 +38,7 @@ class TwoFactorService:
     def _get_provider(cls, method: str) -> TwoFactorProvider:
         provider = cls._providers.get(method.lower())
         if not provider:
-            raise ValueError(f"Unsupported 2FA method: {method}")
+            raise UnsupportedTwoFactorMethodError()
         return provider
 
     @classmethod
@@ -85,10 +86,7 @@ class TwoFactorService:
 
         provider = cls._get_provider(method)
 
-        try:
-            await provider.enable(db, user, code)
-        except ValueError:
-            raise InvalidTwoFactorCodeError()
+        await provider.enable(db, user, code)
 
         # Common logic: generate recovery codes
         codes = cls._generate_recovery_codes()
