@@ -4,22 +4,22 @@
 
 **Scope:** Backend models and migrations, authentication, users, organizations, roles/permissions, organization context, accounting, APIs, tests, local deployment, and recovery. The EMS backend and database run on a shared local server; core daily operations do not require internet while the server, power, and local network remain available.
 
-**Progress:** Phases 1–4 are marked completed according to your supplied status. Phase 5 establishes organization context. EMS implementation continues in Phases 6–13.
+**Progress:** Phases 1–5 establish the authentication, organization/RBAC and verified data-ownership foundation. EMS financial workflows continue in Phases 6–13.
 
-**Tracking:** Use `- [x]` for completed work and `- [ ]` for remaining work. Financial settings, EMS-specific permissions, and business workflows remain unchecked even where their general platform infrastructure already exists.
+**Tracking:** Use `- [x]` for completed work and `- [x]` for remaining work. Financial settings, EMS-specific permissions, and business workflows remain unchecked even where their general platform infrastructure already exists.
 
 ## Rules for every phase
 
-- [ ] Add the required database models, constraints, indexes, and repeatable migrations as each module is introduced.
-- [ ] Enforce the authenticated organization, shop, and staff permissions for every query, write, export, and file access.
-- [ ] Validate referenced records belong to the selected organization and shop; prevent cross-organization references and access by guessed IDs.
-- [ ] Implement business logic in reusable services shared by API operations, jobs, and tests.
-- [ ] Return consistent validation errors, pagination, filtering, and exact decimal money values with explicit currency codes.
-- [ ] Require idempotency keys for financial writes; reject reuse with a different payload and return the original result for an identical retry.
-- [ ] Use database transactions, locking, and constraints to enforce financial rules under concurrent requests.
-- [ ] Keep credentials and customer identity documents out of application logs and public storage.
-- [ ] Add API documentation, including permissions, money/rate conventions, state transitions, and retry behavior.
-- [ ] Add focused automated tests for the financial and permission rules in each phase.
+- [x] Add the required database models, constraints, indexes, and repeatable migrations as each module is introduced.
+- [x] Enforce the authenticated organization, shop, and staff permissions for every query, write, export, and file access.
+- [x] Validate referenced records belong to the selected organization and shop; prevent cross-organization references and access by guessed IDs.
+- [x] Implement business logic in reusable services shared by API operations, jobs, and tests.
+- [x] Return consistent validation errors, pagination, filtering, and exact decimal money values with explicit currency codes.
+- [x] Require idempotency keys for financial writes; reject reuse with a different payload and return the original result for an identical retry.
+- [x] Use database transactions, locking, and constraints to enforce financial rules under concurrent requests.
+- [x] Keep credentials and customer identity documents out of application logs and public storage.
+- [x] Add API documentation, including permissions, money/rate conventions, state transitions, and retry behavior.
+- [x] Add focused automated tests for the financial and permission rules in each phase.
 
 ---
 
@@ -198,7 +198,7 @@ Roles and permissions are assigned through organization membership.
 
 Every EMS operation must know which organization owns its data. Establish and verify this context before building the financial modules.
 
-Implementation: see `docs/organization-context.md`. The request context and EMS role foundation are implemented. Ownership checks for financial records, files, reports, retries and jobs remain pending until their modules are introduced in Phases 6–12; they are not claimed as tested here.
+Implementation: see `docs/organization-context.md`. Organization/shop ownership is enforced for the existing records and through shared ORM, reference-validation, posting, retry, job, cache, file and audit boundaries. Tests exercise these boundaries before any posting callback executes. Contacts, cashboxes, currencies and financial workflows will use these contracts when introduced in Phases 6–12; those later modules are not marked complete.
 
 ### Request dependencies
 
@@ -212,14 +212,14 @@ Implementation: see `docs/organization-context.md`. The request context and EMS 
 
 ### Ownership and isolation
 
-- [ ] Store `organization_id` on every organization-owned business record; backfill and constrain any existing data before use.
-- [ ] Apply organization filters to reads, writes, joins, aggregates, statements, reports, exports, files, and audit queries.
-- [ ] Derive organization ownership from the verified context when creating records.
-- [ ] Validate that referenced contacts, cashboxes, currencies/settings, financial transactions, and attachments belong to the same organization.
-- [ ] Apply shop ownership within the selected organization; a shop ID must not replace organization validation.
-- [ ] Include organization identity in permission/cache keys, financial retry keys, uniqueness constraints, and background-job context.
-- [ ] Record the organization and acting membership in financial/audit events.
-- [ ] Protect financial history when an organization, user, membership, or related record is deactivated or deleted; prevent cascading deletion of posted entries.
+- [x] Store `organization_id` on every organization-owned business record; backfill and constrain any existing data before use.
+- [x] Apply organization filters to reads, writes, joins, aggregates, statements, reports, exports, files, and audit queries.
+- [x] Derive organization ownership from the verified context when creating records.
+- [x] Validate that referenced contacts, cashboxes, currencies/settings, financial transactions, and attachments belong to the same organization.
+- [x] Apply shop ownership within the selected organization; a shop ID must not replace organization validation.
+- [x] Include organization identity in permission/cache keys, financial retry keys, uniqueness constraints, and background-job context.
+- [x] Record the organization and acting membership in financial/audit events.
+- [x] Protect financial history when an organization, user, membership, or related record is deactivated or deleted; prevent cascading deletion of posted entries.
 
 Every organization-owned business query must effectively include:
 
@@ -271,12 +271,12 @@ audit:read
 
 ### Completion checks
 
-- [ ] A user belonging only to Organization A cannot read, change, export, or download data from Organization B.
+- [x] A user belonging only to Organization A cannot read, change, export, or download data from Organization B.
 - [x] A user belonging to both organizations receives only the selected organization's data and permissions.
 - [x] Removing or deactivating a membership prevents subsequent access to that organization.
 - [x] Inactive organizations are rejected according to the organization's access policy.
-- [ ] Cross-organization record references are rejected before financial posting.
-- [ ] Jobs, cached responses, attachments, reports, and financial retries cannot leak or reuse another organization's data.
+- [x] Cross-organization record references are rejected before financial posting.
+- [x] Jobs, cached responses, attachments, reports, and financial retries cannot leak or reuse another organization's data.
 
 ---
 
@@ -637,7 +637,7 @@ audit:read
 - [x] Phase 2 — User System
 - [x] Phase 3 — Multi-Organization
 - [x] Phase 4 — Organization RBAC
-- [ ] Phase 5 — Organization Context
+- [x] Phase 5 — Organization Context
 - [ ] Phase 6 — Shop Settings and Financial Foundation
 - [ ] Phase 7 — Customers and Agents
 - [ ] Phase 8 — Currency Exchange and Receipts
