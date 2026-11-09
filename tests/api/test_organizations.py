@@ -388,7 +388,7 @@ async def test_invalid_input_and_token_types(client, identity, db_session):
     for payload in ({"name": " "}, {"settings": None}, {"slug": "Bad Slug"}):
         assert (
             await client.patch(f"/api/v1/organizations/{org['uuid']}", json=payload)
-        ).status_code == 433
+        ).status_code == 422
     assert (await client.delete("/api/v1/users/me")).status_code == 409
     user, _ = identity
     client.headers["Authorization"] = (
@@ -494,7 +494,7 @@ async def test_selection_requires_active_membership_and_preserves_context(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "identifier, expected",
-    [("123", 433), ("not-a-uuid", 433), ("00000000-0000-0000-0000-000000000001", 404)],
+    [("123", 422), ("not-a-uuid", 422), ("00000000-0000-0000-0000-000000000001", 404)],
 )
 async def test_organization_uuid_paths(client, identity, identifier, expected):
     path = f"/api/v1/organizations/{identifier}"
@@ -513,7 +513,7 @@ async def test_organization_uuid_paths(client, identity, identifier, expected):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "identifier, expected",
-    [("123", 433), ("not-a-uuid", 433), ("00000000-0000-0000-0000-000000000001", 404)],
+    [("123", 422), ("not-a-uuid", 422), ("00000000-0000-0000-0000-000000000001", 404)],
 )
 async def test_membership_uuid_paths(client, identity, identifier, expected):
     org = await create(client)
