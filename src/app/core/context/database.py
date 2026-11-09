@@ -2,6 +2,8 @@ from contextvars import ContextVar, Token
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.exceptions.request import DatabaseContextUnavailableError
+
 _db_context: ContextVar[AsyncSession | None] = ContextVar(
     "db_context",
     default=None,
@@ -20,12 +22,12 @@ def get_current_db() -> AsyncSession:
     Return the database session associated with the current request.
 
     Raises:
-        RuntimeError: If no database session is available.
+        DatabaseContextUnavailableError: If no database session is available.
     """
     db = _db_context.get()
 
     if db is None:
-        raise RuntimeError("No database session is available in the current context.")
+        raise DatabaseContextUnavailableError()
 
     return db
 
