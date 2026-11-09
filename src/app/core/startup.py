@@ -61,8 +61,17 @@ class Startup:
 
     async def _init_roles(self: Self) -> None:
         """
-        Internal method to initialize system roles in the database.
+        Provision missing EMS roles for existing organizations.
         """
+
+        if self.db is not None:
+            from sqlalchemy import select
+
+            from app.models import Organization
+            from app.services.role import RoleService
+
+            for organization_id in await self.db.scalars(select(Organization.id)):
+                await RoleService.provision_ems_defaults(self.db, organization_id)
 
     async def _init_permissions(self: Self) -> None:
         """
