@@ -6,7 +6,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import ConflictError, NotFoundError, ValidationError
+from app.core.exceptions import AppValidationError, ConflictError, NotFoundError
 from app.core.i18n.types import T
 from app.models import (
     Organization,
@@ -166,7 +166,7 @@ class RoleService:
             ).all()
         )
         if {permission.name for permission in permissions} != set(names):
-            raise ValidationError(message=T("permission:unknown"))
+            raise AppValidationError(message=T("permission:unknown"))
         await OrganizationService.require_permissions(
             db, actor_id, organization_id, tuple(names)
         )
@@ -276,15 +276,24 @@ class RoleService:
         )
         for name, names in EMS_ROLE_PERMISSIONS.items():
             existing = await db.scalar(
-                select(Role.id).where(
+                select(Role).where(
                     Role.organization_id == organization_id, Role.name == name
                 )
             )
-            if existing is not None:
+            if existing is not None and not existing.is_system:
                 continue
-            role = Role(organization_id=organization_id, name=name, is_system=True)
-            db.add(role)
-            await db.flush()
+            role = existing
+            if role is None:
+                role = Role(organization_id=organization_id, name=name, is_system=True)
+                db.add(role)
+                await db.flush()
+            assigned = set(
+                await db.scalars(
+                    select(RolePermission.permission_id).where(
+                        RolePermission.role_id == role.id
+                    )
+                )
+            )
             permissions = await db.scalars(
                 select(Permission).where(Permission.name.in_(names))
             )
@@ -292,6 +301,7 @@ class RoleService:
                 [
                     RolePermission(role_id=role.id, permission_id=p.id)
                     for p in permissions
+                    if p.id not in assigned
                 ]
             )
         await PermissionService.invalidate(db, organization_id)
