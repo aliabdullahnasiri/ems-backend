@@ -6,7 +6,7 @@ import pytest_asyncio
 from redis.exceptions import ConnectionError
 from sqlalchemy import select
 
-from app.core.exceptions import ConflictError, NotFoundError, ValidationError
+from app.core.exceptions import AppValidationError, ConflictError, NotFoundError
 from app.models import Role, RolePermission, User, UserRole
 from app.services.organization import OrganizationService
 from app.services.permission import PermissionService
@@ -45,7 +45,7 @@ async def test_service_lifecycle_and_conflicts(db_session, setup_roles):
         await RoleService.create(db_session, org.id, "Staff")
     with pytest.raises(NotFoundError):
         await RoleService.get(db_session, org.id, uuid4())
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         await RoleService.set_permissions(
             db_session, org.id, role.uuid, ["unknown"], owner.id
         )
