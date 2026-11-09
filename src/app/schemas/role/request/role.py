@@ -3,6 +3,7 @@ from uuid import UUID
 
 from pydantic import Field, StringConstraints, model_validator
 
+from app.core.exceptions import NullFieldError
 from app.schemas.base.request import BaseRequestModel
 
 RoleName = Annotated[
@@ -25,7 +26,7 @@ class UpdateRoleRequest(BaseRequestModel):
     @model_validator(mode="after")
     def reject_null_name(self) -> Self:
         if "name" in self.model_fields_set and self.name is None:
-            raise ValueError("name cannot be null")
+            raise NullFieldError("name")
         return self
 
 
