@@ -10,8 +10,10 @@ from app.api.dependencies.oauth import OAuth2Token, RefreshToken
 from app.api.dependencies.redis import RedisClient
 from app.core.exceptions import AuthenticationError, AuthorizationError, NotFoundError
 from app.core.i18n.types import T
+from app.core.permissions import PERMISSION_DEFINITIONS
 from app.core.security.manager import SecurityManager
 from app.models.organization import Organization
+from app.models.organization_membership import OrganizationMembership
 from app.models.user import User
 from app.models.user_session import UserSession
 from app.services.auth.jwt import JWTService
@@ -20,6 +22,7 @@ from app.services.auth.two_factor.challenge import (
     TwoFactorChallengeService,
 )
 from app.services.organization import OrganizationService
+from app.services.organization_context import OrganizationContext
 from app.services.permission import PermissionService
 
 # Singleton instance of SecurityManager to be used by FastAPI dependencies
@@ -55,12 +58,21 @@ async def get_current_user_uuid(
 
 
 async def get_current_user(
-    db: DBSession, uuid: Annotated[UUID, Depends(get_current_user_uuid)]
-) -> User | None:
+    db: DBSession,
+    uuid: Annotated[UUID, Depends(get_current_user_uuid)],
+    token: Annotated[str, Depends(get_current_token)],
+) -> User:
     """
     FastAPI dependency to retrieve the currently authenticated User object.
     """
-    return await security_manager.get_current_user(db, uuid)
+    if JWTService.claims(token).get("type") != "access" or await JWTService.is_revoked(
+        token, db
+    ):
+        raise AuthenticationError(code=401)
+    user = await security_manager.get_current_user(db, uuid)
+    if user is None or not user.is_active:
+        raise AuthenticationError(code=401)
+    return user
 
 
 async def get_current_refresh_token(
@@ -169,11 +181,41 @@ CurrentRefreshSession = Annotated[UserSession, Depends(get_current_refresh_sessi
 CurrentOrganization = Annotated[Organization, Depends(get_current_organization)]
 
 
+async def get_current_membership(
+    db: DBSession, session: CurrentActiveSession, organization: CurrentOrganization
+) -> OrganizationMembership:
+    return await OrganizationService.validate_membership(db, session.user, organization)
+
+
+CurrentMembership = Annotated[OrganizationMembership, Depends(get_current_membership)]
+
+
+async def get_current_user_permissions(
+    db: DBSession,
+    organization: CurrentOrganization,
+    membership: CurrentMembership,
+    redis: RedisClient,
+) -> frozenset[str]:
+    if organization.owner_id == membership.user_id:
+        return frozenset(PERMISSION_DEFINITIONS)
+    return frozenset(
+        await PermissionService.granted(db, membership.user_id, organization.id, redis)
+    )
+
+
+CurrentUserPermissions = Annotated[
+    frozenset[str], Depends(get_current_user_permissions)
+]
+
+
 def current_user_can(*permissions: str):
     """Check the URL's organization, falling back to the selected organization."""
 
     async def dependency(
-        db: DBSession, session: CurrentActiveSession, request: Request, redis: RedisClient
+        db: DBSession,
+        session: CurrentActiveSession,
+        request: Request,
+        redis: RedisClient,
     ) -> None:
         await PermissionService.ensure_exists(db, permissions)
 
@@ -210,3 +252,14 @@ class PermissionRequired:
             permissions = (permissions,)
 
         return Annotated[None, Depends(current_user_can(*[p for p in permissions]))]
+
+
+async def get_current_organization_context(
+    organization: CurrentOrganization, membership: CurrentMembership
+):
+    return OrganizationContext(organization.id, membership.id, membership.user_id)
+
+
+CurrentOrganizationContext = Annotated[
+    OrganizationContext, Depends(get_current_organization_context)
+]
