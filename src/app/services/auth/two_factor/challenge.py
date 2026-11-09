@@ -5,14 +5,15 @@ from uuid import uuid4
 
 import jwt
 from jwt import InvalidTokenError
-from pydantic import ValidationError
 from redis.asyncio import Redis
 
 from app.core.config import settings
+from app.core.exceptions import AppValidationError
 from app.core.exceptions.authentication import (
     InvalidTwoFactorChallengeError,
     TwoFactorChallengeExpiredError,
 )
+from app.core.exceptions.request import TwoFactorChallengeStorageError
 from app.schemas.auth.internal.two_factor import TwoFactorChallengePayload
 
 
@@ -119,7 +120,7 @@ class TwoFactorChallengeService:
             A JWT token that can be used to validate the challenge.
 
         Raises:
-            RuntimeError: If the challenge failed to be created in Redis.
+            TwoFactorChallengeStorageError: If the challenge cannot be stored.
         """
         normalized_user_id = str(user_id)
 
@@ -140,7 +141,7 @@ class TwoFactorChallengeService:
         )
 
         if not created:
-            raise RuntimeError("Failed to create 2FA challenge in Redis")
+            raise TwoFactorChallengeStorageError()
 
         return token
 
@@ -161,10 +162,10 @@ class TwoFactorChallengeService:
             A TwoFactorChallenge object containing the challenge details.
 
         Raises:
-            ValueError: If the token is invalid, expired, or the challenge is inactive.
+            InvalidTwoFactorChallengeError: If the token or challenge is invalid.
+            TwoFactorChallengeExpiredError: If the token has expired.
         """
         try:
-
             payload: TwoFactorChallengePayload = (
                 TwoFactorChallengePayload.model_validate(
                     jwt.decode(
@@ -184,7 +185,7 @@ class TwoFactorChallengeService:
                 )
             )
 
-        except InvalidTokenError, ValidationError:
+        except InvalidTokenError, AppValidationError:
             raise InvalidTwoFactorChallengeError()
 
         user_id = payload.sub
