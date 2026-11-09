@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -19,6 +19,10 @@ class Branch(Base):
         ),
         nullable=False,
         index=True,
+    )
+
+    __table_args__ = (
+        UniqueConstraint("organization_id", "id", name="uq_branches_organization_id"),
     )
 
     name: Mapped[str] = mapped_column(
