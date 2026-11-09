@@ -1,6 +1,6 @@
 import pytest
-from pydantic import ValidationError
 
+from app.core.exceptions import AppValidationError
 from app.schemas.auth.internal.two_factor import TwoFactorChallengePayload
 
 
@@ -30,19 +30,19 @@ def test_two_factor_challenge_payload_invalid_purpose():
         "exp": 1730000000,
         "iat": 1720000000,
     }
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TwoFactorChallengePayload(**data)
 
 
 def test_two_factor_challenge_payload_missing_fields():
     # Missing required fields
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TwoFactorChallengePayload(sub="user123")
 
 
 def test_two_factor_challenge_payload_empty_strings():
     # min_length=1 constraint
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TwoFactorChallengePayload(
             sub="",
             jti="token456",
@@ -53,9 +53,8 @@ def test_two_factor_challenge_payload_empty_strings():
 
 
 def test_two_factor_challenge_payload_invalid_timestamp():
-    # The validator uses datetime.fromtimestamp.
-    # Very large numbers can raise OverflowError.
-    with pytest.raises((ValidationError, OverflowError)):
+    # Timestamp overflows are normalized to an application validation error.
+    with pytest.raises(AppValidationError):
         TwoFactorChallengePayload(
             sub="user123",
             jti="token456",
