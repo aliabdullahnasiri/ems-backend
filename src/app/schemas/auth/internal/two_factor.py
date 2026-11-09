@@ -21,7 +21,9 @@ class TwoFactorChallengePayload(BaseModel):
     def validate_timestamp(
         cls: type[TwoFactorChallengePayload], value: float
     ) -> int | float:
-        if not datetime.fromtimestamp(value, tz=UTC):
-            raise InvalidTimestampError()
+        try:
+            datetime.fromtimestamp(value, tz=UTC)
+        except (OverflowError, OSError, ValueError) as exc:
+            raise InvalidTimestampError() from exc
 
         return value
