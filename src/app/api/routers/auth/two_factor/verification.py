@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import Request
 
-from app.api.dependencies.auth import Current2FAChallenge, CurrentUser
+from app.api.dependencies.auth import Current2FAChallenge
 from app.api.dependencies.db import DBSession
 from app.api.dependencies.redis import RedisClient
 from app.api.router import Router
@@ -26,7 +26,6 @@ async def verify_2fa(
     data: TOTPVerifyRequest,
     challenge: Current2FAChallenge,
     db: DBSession,
-    user: CurrentUser,
     redis: RedisClient,
     request: Request,
 ) -> TwoFactorVerifyResponse:
@@ -36,7 +35,7 @@ async def verify_2fa(
     user_id = challenge.user_id
     user = await UserService.get_by_uuid(db, user_uuid=UUID(user_id))
 
-    if not user:
+    if not user or not user.is_active:
         raise AuthenticationError(T("auth:user_not_found"))
 
     # 1. Verify TOTP or Recovery Code
