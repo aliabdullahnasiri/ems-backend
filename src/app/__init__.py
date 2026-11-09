@@ -3,7 +3,7 @@ from typing import Self, cast
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from pydantic import ValidationError
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -66,7 +66,7 @@ class App:
         App.register_routers(app)
 
         app.add_exception_handler(RequestValidationError, validation_error_handler)
-        app.add_exception_handler(ValidationError, validation_error_handler)
+        app.add_exception_handler(PydanticValidationError, validation_error_handler)
         app.add_exception_handler(NoResultFound, no_result_found_handler)
 
         app.add_exception_handler(
