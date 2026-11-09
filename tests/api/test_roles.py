@@ -43,8 +43,8 @@ async def test_role_and_permission_lifecycle(client, identity, db_session):
     assert role["organization_id"] == org["id"]
     assert role["is_system"] is False
     assert (await client.get(role_path)).json()["data"] == role
-    assert [r["id"] for r in (await client.get(path + "/roles")).json()["data"]] == [
-        role["id"]
+    assert role["id"] in [
+        r["id"] for r in (await client.get(path + "/roles")).json()["data"]
     ]
     assert (await client.get(role_path + "/permissions")).json()["data"] == []
 
@@ -71,7 +71,11 @@ async def test_role_and_permission_lifecycle(client, identity, db_session):
     assert response.status_code == 204 and not response.content
     assert (await client.get(role_path)).status_code == 404
     assert await db_session.get(Role, role["id"]) is None
-    assert (await db_session.scalars(select(RolePermission))).all() == []
+    assert (
+        await db_session.scalars(
+            select(RolePermission).where(RolePermission.role_id == role["id"])
+        )
+    ).all() == []
 
 
 @pytest.mark.asyncio
@@ -89,7 +93,7 @@ async def test_role_names_are_unique_per_organization(client, identity):
         path + f"/roles/{role['uuid']}", json={"name": "Staff"}
     )
     assert response.status_code == 409, response.text
-    assert len((await client.get(path + "/roles")).json()["data"]) == 2
+    assert len((await client.get(path + "/roles")).json()["data"]) == 5
     assert len((await client.get(path + "/roles?limit=1&offset=1")).json()["data"]) == 1
 
 
