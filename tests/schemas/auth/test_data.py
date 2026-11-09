@@ -2,8 +2,8 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 import pytest
-from pydantic import ValidationError
 
+from app.core.exceptions import AppValidationError
 from app.core.exceptions.validation import (
     AuthTokensRequiredError,
 )
@@ -35,7 +35,7 @@ def test_refresh_data_valid():
 
 
 def test_refresh_data_missing_field():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         RefreshData()
 
 
@@ -59,7 +59,7 @@ def test_session_data_valid():
 
 
 def test_session_data_invalid_uuid():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         SessionData(
             id=1,
             uuid="not-a-uuid",
@@ -68,7 +68,7 @@ def test_session_data_invalid_uuid():
 
 
 def test_session_data_missing_required():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         SessionData(id=1, uuid="550e8400-e29b-41d4-a716-446655440000")
 
 
@@ -83,7 +83,7 @@ def test_two_factor_setup_data_valid():
 
 
 def test_two_factor_setup_data_missing_field():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         TOTPSetupData(provisioning_uri="uri")
 
 
@@ -94,5 +94,5 @@ def test_recovery_codes_data_valid():
 
 
 def test_recovery_codes_data_invalid_type():
-    with pytest.raises(ValidationError):
+    with pytest.raises(AppValidationError):
         RecoveryCodesData(recovery_codes="not-a-list")
