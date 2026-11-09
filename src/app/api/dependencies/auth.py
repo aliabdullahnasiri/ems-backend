@@ -255,11 +255,13 @@ class PermissionRequired:
 
 
 async def get_current_organization_context(
-    organization: CurrentOrganization, membership: CurrentMembership
+    organization: CurrentOrganization, membership: CurrentMembership, db: DBSession
 ):
-    return OrganizationContext(organization.id, membership.id, membership.user_id)
+    return OrganizationContext(
+        organization.id, membership.id, membership.user_id, str(membership.uuid)
+    )
 
 
 CurrentOrganizationContext = Annotated[
-    OrganizationContext, Depends(get_current_organization_context)
+    OrganizationContext, Depends(get_current_organization_context, scope="function")
 ]
