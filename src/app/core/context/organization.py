@@ -74,9 +74,11 @@ def _scope_writes(session, flush_context, instances):
             record.organization_id = organization_id
         if record.organization_id != organization_id:
             raise AuthorizationError()
+        state = inspect(record)
         if (
-            inspect(record).persistent
-            and inspect(record).attrs.organization_id.history.has_changes()
+            state is not None
+            and state.persistent
+            and state.attrs.organization_id.history.has_changes()
         ):
             raise AuthorizationError(message=T("validation:immutable_ownership"))
 
