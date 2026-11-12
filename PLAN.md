@@ -282,53 +282,55 @@ audit:read
 
 ## Phase 6 — Shop Settings and Financial Foundation
 
+Implementation and accounting contracts: see `docs/financial-foundation.md`. Later workflow APIs and state/allocation rules remain in their respective phases.
+
 ### Settings and data handling
 
-- [ ] Store shop name, address, phone, logo reference, preferred language, and receipt footer.
-- [ ] Store timestamps consistently and calculate business days and report cutoffs in Kabul timezone.
-- [ ] Store and return Unicode Dari/Pashto text and language preferences without corrupting names or notes.
-- [ ] Normalize supported numeral input, validate decimal strings, and return consistent exact monetary values.
-- [ ] Configure AFN, USD, PKR, and additional currencies with explicit codes and decimal precision.
-- [ ] If Iranian currency is enabled, clearly distinguish rial from toman and store the chosen conversion consistently.
+- [x] Store shop name, address, phone, logo reference, preferred language, and receipt footer.
+- [x] Store timestamps consistently and calculate business days and report cutoffs in Kabul timezone.
+- [x] Store and return Unicode Dari/Pashto text and language preferences without corrupting names or notes.
+- [x] Normalize supported numeral input, validate decimal strings, and return consistent exact monetary values.
+- [x] Configure AFN, USD, PKR, and additional currencies with explicit codes and decimal precision.
+- [x] If Iranian currency is enabled, clearly distinguish rial from toman and store the chosen conversion consistently.
 
 ### Cashboxes and accounting
 
-- [ ] Create and deactivate cashboxes without losing their history.
-- [ ] Track each cashbox balance separately for every currency.
-- [ ] Implement ledger accounts, journal entries, and journal lines using double-entry accounting.
-- [ ] Store original-currency amounts and the AFN book values required for cost/profit reporting.
-- [ ] Use exact decimal calculations and documented rounding rules.
-- [ ] Define and verify the accounting entries for opening balances, exchanges, payments, hawala, settlements, expenses, transfers, and reversals.
-- [ ] Require balanced entries and derive cash/debt balances from posted ledger records.
-- [ ] Save each financial action and all its ledger effects in one database transaction.
-- [ ] Give financial requests a unique retry key so repeating a request returns its original result without posting again.
-- [ ] Protect cash checks and postings against simultaneous cashier requests.
-- [ ] Prevent unauthorized negative cash balances and reject invalid amounts/currencies.
-- [ ] Post reviewed opening balances and foreign-currency acquisition costs once, with owner approval; do not treat openings as income.
-- [ ] Keep posted financial records immutable and record corrections through linked reversals.
-- [ ] Record actor, action, record reference, reason, and timestamp in protected audit history.
+- [x] Create and deactivate cashboxes without losing their history.
+- [x] Track each cashbox balance separately for every currency.
+- [x] Implement ledger accounts, journal entries, and journal lines using double-entry accounting.
+- [x] Store original-currency amounts and the AFN book values required for cost/profit reporting.
+- [x] Use exact decimal calculations and documented rounding rules.
+- [x] Define and verify the accounting entries for opening balances, exchanges, payments, hawala, settlements, expenses, transfers, and reversals.
+- [x] Require balanced entries and derive cash/debt balances from posted ledger records.
+- [x] Save each financial action and all its ledger effects in one database transaction.
+- [x] Give financial requests a unique retry key so repeating a request returns its original result without posting again.
+- [x] Protect cash checks and postings against simultaneous cashier requests.
+- [x] Prevent unauthorized negative cash balances and reject invalid amounts/currencies.
+- [x] Post reviewed opening balances and foreign-currency acquisition costs once, with owner approval; do not treat openings as income.
+- [x] Keep posted financial records immutable and record corrections through linked reversals.
+- [x] Record actor, action, record reference, reason, and timestamp in protected audit history.
 
 ### Endpoints
 
-- [ ] `GET /settings`
-- [ ] `PATCH /settings`
-- [ ] `GET /currencies`
-- [ ] `POST /currencies`
-- [ ] `PATCH /currencies/{id}`
-- [ ] `POST /cashboxes`
-- [ ] `GET /cashboxes`
-- [ ] `PATCH /cashboxes/{id}`
-- [ ] `GET /cashboxes/{id}/movements`
-- [ ] `POST /opening-balances`
-- [ ] `GET /ledger/entries`
-- [ ] `GET /audit-logs`
+- [x] `GET /settings`
+- [x] `PATCH /settings`
+- [x] `GET /currencies`
+- [x] `POST /currencies`
+- [x] `PATCH /currencies/{id}`
+- [x] `POST /cashboxes`
+- [x] `GET /cashboxes`
+- [x] `PATCH /cashboxes/{id}`
+- [x] `GET /cashboxes/{id}/movements`
+- [x] `POST /opening-balances`
+- [x] `GET /ledger/entries`
+- [x] `GET /audit-logs`
 
 ### Completion checks
 
-- [ ] A failed financial request leaves no partial transaction or balance change.
-- [ ] Two simultaneous requests cannot spend the same available cash.
-- [ ] Repeated requests with the same retry key cannot create duplicate ledger entries.
-- [ ] Ledger totals reconcile with API balance responses, including openings and reversals.
+- [x] A failed financial request leaves no partial transaction or balance change.
+- [x] Two simultaneous requests cannot spend the same available cash.
+- [x] Repeated requests with the same retry key cannot create duplicate ledger entries.
+- [x] Ledger totals reconcile with API balance responses, including openings and reversals.
 
 ---
 
@@ -640,7 +642,7 @@ Implementation: `docs/contacts.md`. Phase 7 uses Phase 6 revision `f6a001c9d210`
 - [x] Phase 3 — Multi-Organization
 - [x] Phase 4 — Organization RBAC
 - [x] Phase 5 — Organization Context
-- [ ] Phase 6 — Shop Settings and Financial Foundation
+- [x] Phase 6 — Shop Settings and Financial Foundation
 - [ ] Phase 7 — Customers and Agents
 - [ ] Phase 8 — Currency Exchange and Receipts
 - [ ] Phase 9 — Customer Debts and Payments
