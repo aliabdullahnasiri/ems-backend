@@ -1,5 +1,7 @@
 """Retain actor identities and tenant history when access is revoked."""
 
+from typing import cast
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,7 +23,7 @@ class HistoryService:
         for model in HistoryService.owned_models():
             if (
                 await db.scalar(
-                    select(model.id)
+                    select(cast(type[Base], model).id)
                     .where(model.organization_id == organization_id)
                     .limit(1)
                 )
@@ -40,14 +42,17 @@ class HistoryService:
         for model in HistoryService.owned_models():
             if not hasattr(model, "membership_id") or not hasattr(model, "user_id"):
                 continue
-            field, value = (
-                (model.membership_id, membership_id)
+            field_name, value = (
+                ("membership_id", membership_id)
                 if membership_id is not None
-                else (model.user_id, user_id)
+                else ("user_id", user_id)
             )
+            field = getattr(model, field_name)
             if (
                 value is not None
-                and await db.scalar(select(model.id).where(field == value).limit(1))
+                and await db.scalar(
+                    select(cast(type[Base], model).id).where(field == value).limit(1)
+                )
                 is not None
             ):
                 return True
