@@ -334,35 +334,37 @@ audit:read
 
 ## Phase 7 — Customers and Agents
 
+Implementation: `docs/contacts.md`. Phase 7 uses Phase 6 revision `f6a001c9d210`; the phase completion tracker remains pending until that foundation is integrated.
+
 ### Contacts and balances
 
-- [ ] Create a contact as a customer, an agent, or both.
-- [ ] Store name, phone, location, notes, and identification fields required for the agreed workflow.
-- [ ] Restrict access to identification details and any supporting files.
-- [ ] Implement private attachment upload/download with file-size/type validation, organization/shop ownership, authorized record linking, and protected storage; preserve files referenced by posted financial records.
-- [ ] Search contacts by name or phone and flag likely duplicates.
-- [ ] Update or deactivate contacts while retaining their financial history.
-- [ ] Record owner-reviewed opening receivables and payables through the ledger.
-- [ ] Return separate customer/agent balances for every currency.
-- [ ] Return explicit customer/agent receivable and payable directions so the caller can distinguish who owes whom.
-- [ ] Compute statement running balances by currency using a documented receivable/payable sign convention.
-- [ ] Provide date-filtered statement responses and CSV exports with opening balances, movements, and closing balances.
+- [x] Create a contact as a customer, an agent, or both.
+- [x] Store name, phone, location, notes, and identification fields required for the agreed workflow.
+- [x] Restrict access to identification details and any supporting files.
+- [x] Implement private attachment upload/download with file-size/type validation, organization/shop ownership, authorized record linking, and protected storage; preserve files referenced by posted financial records.
+- [x] Search contacts by name or phone and flag likely duplicates.
+- [x] Update or deactivate contacts while retaining their financial history.
+- [x] Record owner-reviewed opening receivables and payables through the ledger.
+- [x] Return separate customer/agent balances for every currency.
+- [x] Return explicit customer/agent receivable and payable directions so the caller can distinguish who owes whom.
+- [x] Compute statement running balances by currency using a documented receivable/payable sign convention.
+- [x] Provide date-filtered statement responses and CSV exports with opening balances, movements, and closing balances.
 
 ### Endpoints
 
-- [ ] `POST /contacts`
-- [ ] `GET /contacts`
-- [ ] `GET /contacts/{id}`
-- [ ] `PATCH /contacts/{id}`
-- [ ] `GET /contacts/{id}/balances`
-- [ ] `GET /contacts/{id}/statement`
-- [ ] `POST /files` — authorized upload linked to a permitted record.
-- [ ] `GET /files/{id}` — authorized download only.
+- [x] `POST /contacts`
+- [x] `GET /contacts`
+- [x] `GET /contacts/{id}`
+- [x] `PATCH /contacts/{id}`
+- [x] `GET /contacts/{id}/balances`
+- [x] `GET /contacts/{id}/statement`
+- [x] `POST /files` — authorized upload linked to a permitted record.
+- [x] `GET /files/{id}` — authorized download only.
 
 ### Completion checks
 
-- [ ] Opening debts change contact balances without changing physical cash or reported income.
-- [ ] Every customer/agent balance returned by the API can be traced to its ledger entries.
+- [x] Opening debts change contact balances without changing physical cash or reported income.
+- [x] Every customer/agent balance returned by the API can be traced to its ledger entries.
 
 ---
 
