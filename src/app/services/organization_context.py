@@ -5,7 +5,7 @@ from app.core.exceptions import OrganizationOwnershipError
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import TypeVar, cast
 from uuid import UUID
 
 from sqlalchemy import select
@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import AuthorizationError, NotFoundError
 from app.models import Branch, Organization, User
 from app.models.base import Base
+from app.models.ownership import OrganizationOwned
 from app.services.organization import OrganizationService
 
 Record = TypeVar("Record", bound=Base)
@@ -59,7 +60,7 @@ class OrganizationContext:
         """Use this scoped select for reads, joins, aggregates and exports."""
         return select(model).where(
             *(
-                m.organization_id == self.organization_id
+                cast(type[OrganizationOwned], m).organization_id == self.organization_id
                 for m in (model, *joined_models)
             )
         )
@@ -78,7 +79,7 @@ class OrganizationContext:
             raise NotFoundError()
         return record
 
-    async def shop(self, db: AsyncSession, shop_id: int) -> Branch:
+    async def shop(self, db: AsyncSession, shop_id: int | UUID) -> Branch:
         shop = await self.get(db, Branch, shop_id)
         if not shop.is_active:
             raise AuthorizationError()
@@ -101,7 +102,7 @@ class OrganizationContext:
         self,
         db: AsyncSession,
         model: type[Record],
-        record_id: int,
+        record_id: int | UUID,
         *,
         shop_id: int | None = None,
     ) -> Record:
