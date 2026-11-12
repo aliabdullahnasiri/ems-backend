@@ -43,7 +43,7 @@ def test_assignment_errors_use_the_same_application_contract():
 
     value = Example(count=1)
     with pytest.raises(AppValidationError):
-        value.count = "invalid"
+        value.count = "invalid"  # pyright: ignore[reportAttributeAccessIssue] -- exercise runtime assignment validation
 
 
 def test_custom_null_error_retains_field_location():
