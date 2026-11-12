@@ -22,6 +22,7 @@ def test_get_user_response_valid():
     }
     model = GetUserResponse(**data)
     assert model.success is True
+    assert model.data is not None
     assert model.data.user_name == "johndoe"
 
 
@@ -43,4 +44,5 @@ def test_create_user_response_valid():
     }
     model = CreateUserResponse(**data)
     assert model.success is True
+    assert model.data is not None
     assert model.data.user_name == "johndoe"
