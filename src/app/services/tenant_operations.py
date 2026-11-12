@@ -18,6 +18,7 @@ from collections.abc import Awaitable, Callable
 from decimal import Decimal
 from pathlib import PurePath
 from typing import Any
+from uuid import UUID
 
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
@@ -273,7 +274,7 @@ class TenantOperations:
     async def upload(
         db: AsyncSession,
         context: OrganizationContext,
-        shop_id: int,
+        shop_id: int | UUID,
         file_name: str,
         content_type: str,
         content: bytes,
@@ -314,7 +315,7 @@ class TenantOperations:
 
     @staticmethod
     async def download(
-        db: AsyncSession, context: OrganizationContext, attachment_id: int
+        db: AsyncSession, context: OrganizationContext, attachment_id: int | UUID
     ):
         await TenantOperations.authorize(db, context, "attachment:read")
         attachment = await context.get(db, PrivateAttachment, attachment_id)
