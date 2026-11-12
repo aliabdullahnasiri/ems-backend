@@ -2,6 +2,15 @@ from app.models.associations import RolePermission, UserRole
 from app.models.associations.organization_user import OrganizationUser
 from app.models.base import Base
 from app.models.branch import Branch
+from app.models.finance import (
+    Cashbox,
+    Currency,
+    JournalEntry,
+    JournalLine,
+    JournalPosting,
+    LedgerAccount,
+    ShopSettings,
+)
 from app.models.organization import Organization
 from app.models.organization_membership import OrganizationMembership
 from app.models.permission import Permission
@@ -16,7 +25,13 @@ __all__ = [
     "AuditEvent",
     "Base",
     "Branch",
+    "Cashbox",
+    "Currency",
     "FinancialRetry",
+    "JournalEntry",
+    "JournalLine",
+    "JournalPosting",
+    "LedgerAccount",
     "Organization",
     "OrganizationMembership",
     "OrganizationUser",
@@ -26,6 +41,7 @@ __all__ = [
     "Role",
     "RolePermission",
     "SecurityEvent",
+    "ShopSettings",
     "User",
     "UserRole",
     "UserSession",
