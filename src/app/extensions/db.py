@@ -10,6 +10,11 @@ engine = create_async_engine(
     max_overflow=0,
     pool_pre_ping=True,
     hide_parameters=True,
+    **(
+        {"isolation_level": "READ COMMITTED"}
+        if settings.DATABASE_URL.startswith(("mysql", "postgresql"))
+        else {}
+    ),
 )
 
 SessionLocal = async_sessionmaker(
