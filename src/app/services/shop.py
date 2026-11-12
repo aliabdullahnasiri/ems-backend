@@ -2,6 +2,7 @@
 
 import csv
 import io
+from uuid import UUID
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,7 +33,7 @@ class ShopService:
         )
 
     @staticmethod
-    async def get(db: AsyncSession, context: OrganizationContext, shop_id: int):
+    async def get(db: AsyncSession, context: OrganizationContext, shop_id: int | UUID):
         await TenantOperations.authorize(db, context, "settings:read")
         return await context.get(db, Branch, shop_id)
 
@@ -58,7 +59,10 @@ class ShopService:
 
     @staticmethod
     async def update(
-        db: AsyncSession, context: OrganizationContext, shop_id: int, changes: dict
+        db: AsyncSession,
+        context: OrganizationContext,
+        shop_id: int | UUID,
+        changes: dict,
     ):
         await TenantOperations.authorize(db, context, "settings:update")
         shop = await context.get(db, Branch, shop_id)
@@ -109,6 +113,8 @@ class ShopService:
     @staticmethod
     async def count(db: AsyncSession, context: OrganizationContext) -> int:
         await TenantOperations.authorize(db, context, "report:read")
-        return await db.scalar(
-            select(func.count()).select_from(context.query(Branch).subquery())
-        )
+        return (
+            await db.execute(
+                select(func.count()).select_from(context.query(Branch).subquery())
+            )
+        ).scalar_one()
