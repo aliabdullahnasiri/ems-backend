@@ -1,5 +1,7 @@
 """Tenant-safe audit, retries and private attachment storage."""
 
+from typing import Any
+
 from sqlalchemy import JSON, ForeignKeyConstraint, LargeBinary, String, UniqueConstraint
 from sqlalchemy.dialects.mysql import MEDIUMBLOB
 from sqlalchemy.orm import Mapped, mapped_column
@@ -31,7 +33,7 @@ class AuditEvent(ImmutableHistory, OrganizationOwned, Base):
     reason: Mapped[str | None] = mapped_column(String(500))
     # Deliberately no free-form request payload: credentials and ID documents
     # must never be copied into an audit log.
-    __table_args__ = (
+    __table_args__: Any = (
         actor_constraint("fk_audit_actor"),
         UniqueConstraint(
             "organization_id", "id", name="uq_audit_events_organization_id"
@@ -47,7 +49,7 @@ class FinancialRetry(ImmutableHistory, OrganizationOwned, Base):
     retry_key: Mapped[str] = mapped_column(String(128), nullable=False)
     payload_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     result: Mapped[dict] = mapped_column(JSON, nullable=False)
-    __table_args__ = (
+    __table_args__: Any = (
         actor_constraint("fk_retry_actor"),
         UniqueConstraint(
             "organization_id", "operation", "retry_key", name="uq_financial_retry_scope"
