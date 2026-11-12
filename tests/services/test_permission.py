@@ -33,7 +33,7 @@ async def test_registration_survives_subsequent_request_rollback(tmp_path):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'permissions.db'}")
     try:
         async with engine.begin() as connection:
-            await connection.run_sync(Permission.__table__.create)
+            await connection.run_sync(Permission.metadata.tables["permissions"].create)
         sessions = async_sessionmaker(engine)
         async with sessions() as session:
             await PermissionService.ensure_exists(session, ("stock.read",))
