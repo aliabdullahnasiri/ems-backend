@@ -1,6 +1,7 @@
 """Tenant-safe audit, retries and private attachment storage."""
 
 from sqlalchemy import JSON, ForeignKeyConstraint, LargeBinary, String, UniqueConstraint
+from sqlalchemy.dialects.mysql import MEDIUMBLOB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
@@ -57,10 +58,11 @@ class FinancialRetry(ImmutableHistory, OrganizationOwned, Base):
     )
 
 
-class PrivateAttachment(ShopOwned, Base):
+class PrivateAttachment(ImmutableHistory, ShopOwned, Base):
     __tablename__ = "private_attachments"
     file_name: Mapped[str] = mapped_column(String(200), nullable=False)
     content_type: Mapped[str] = mapped_column(String(100), nullable=False)
-    content: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
-    # Until contacts/financial records are introduced, attachments belong to a
-    # verified shop. Later record links must use composite ownership constraints.
+    content: Mapped[bytes] = mapped_column(
+        LargeBinary().with_variant(MEDIUMBLOB(), "mysql"), nullable=False
+    )
+    # Stored evidence is retained byte-for-byte; contact links use composite FKs.

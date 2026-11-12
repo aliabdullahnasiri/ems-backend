@@ -30,3 +30,8 @@ __all__ = [
     "UserRole",
     "UserSession",
 ]
+
+# Phase 7 counterparty records. Keep this registration independent of finance.
+from app.models.contact import Contact, ContactAccount, ContactAttachment
+
+__all__ += ["Contact", "ContactAccount", "ContactAttachment"]

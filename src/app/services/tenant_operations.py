@@ -319,4 +319,7 @@ class TenantOperations:
         await TenantOperations.authorize(db, context, "attachment:read")
         attachment = await context.get(db, PrivateAttachment, attachment_id)
         await context.shop(db, attachment.shop_id)
+        from app.services.contact import ContactService
+
+        await ContactService.authorize_attachment(db, context, attachment.id)
         return attachment

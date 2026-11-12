@@ -116,16 +116,28 @@ async def upload_file(
     context: CurrentOrganizationContext,
     shop_uuid: Annotated[UUID, Form()],
     file: Annotated[UploadFile, File()],
+    contact_uuid: Annotated[UUID | None, Form()] = None,
 ):
     """Private shop attachment, max 5 MiB, PDF/PNG/JPEG (attachment:manage).
 
     Ownership comes from session context. Files are stored privately in the DB,
-    never under a public directory. Record-specific links follow in later phases.
+    never under a public directory. Contact identity links require contact_uuid,
+    contact:manage and settings:update; links cannot be reassigned or deleted.
     """
+    from app.services.contact import ContactService
+
+    if contact_uuid is not None:
+        await TenantOperations.authorize(db, context, "contact:manage", "settings:update")
+        contact = await ContactService.get(db, context, contact_uuid)
+        shop = await context.shop(db, shop_uuid)
+        await context.reference(db, type(contact), contact.id, shop_id=shop.id)
     content = await file.read(5 * 1024 * 1024 + 1)
-    attachment = await TenantOperations.upload(
-        db, context, shop_uuid, file.filename or "", file.content_type or "", content
-    )
+    async with db.begin_nested():
+        attachment = await TenantOperations.upload(
+            db, context, shop_uuid, file.filename or "", file.content_type or "", content
+        )
+        if contact_uuid is not None:
+            await ContactService.link_attachment(db, context, contact_uuid, attachment)
     return {
         "data": {
             "id": attachment.id,
@@ -179,3 +191,9 @@ async def audit_logs(
             for e in events
         ]
     }
+
+
+# Customers and agents extend the existing selected-organization resources.
+from app.api.routers.contacts import router as contacts_router
+
+router.include_router(contacts_router)
