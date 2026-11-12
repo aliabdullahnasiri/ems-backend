@@ -1,11 +1,15 @@
 """Database-enforced ownership contracts for EMS records."""
 
-from sqlalchemy import ForeignKey, ForeignKeyConstraint, UniqueConstraint, event
+from typing import ClassVar
+
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, Table, UniqueConstraint, event
 from sqlalchemy.orm import Mapped, declared_attr, mapped_column
 
 
 class OrganizationOwned:
     """Tenant identity is required and deletion cannot discard business history."""
+
+    __tablename__: ClassVar[str]
 
     organization_id: Mapped[int] = mapped_column(
         ForeignKey("organizations.id", ondelete="RESTRICT"), nullable=False, index=True
@@ -83,6 +87,8 @@ def _create_immutable_triggers(target, connection, **kwargs):
 
 class ImmutableHistory:
     """Append-only posted tables; database triggers reject updates and deletion."""
+
+    __table__: ClassVar[Table]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
