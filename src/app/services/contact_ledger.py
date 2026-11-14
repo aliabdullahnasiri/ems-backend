@@ -165,6 +165,21 @@ class ContactLedgerService:
                     exact(abs(amount), currency.precision),
                     exact(abs(cost), 2),
                 )
+            if data.role == "agent":
+                from app.services.agent_settlement import AgentSettlementService
+
+                await AgentSettlementService.record(
+                    db,
+                    context,
+                    contact.shop_id,
+                    contact.id,
+                    result["id"],
+                    account_id,
+                    currency.id,
+                    data.direction,
+                    exact(abs(amount), currency.precision),
+                    exact(abs(cost), 2),
+                )
             return result
 
         return await TenantOperations.execute_once(
@@ -178,7 +193,9 @@ class ContactLedgerService:
         )
 
     @staticmethod
-    async def rows(db: AsyncSession, context: OrganizationContext, contact):
+    async def rows(
+        db: AsyncSession, context: OrganizationContext, contact, role: str | None = None
+    ):
         """Read only sealed contact journal lines with explicit tenant/shop joins."""
         query = (
             select(JournalLine, JournalEntry, ContactAccount, Currency)
@@ -210,6 +227,10 @@ class ContactLedgerService:
             )
             .order_by(JournalEntry.created_at, JournalEntry.id, JournalLine.id)
         )
+        if role is not None:
+            if role not in ("customer", "agent"):
+                raise AppValidationError()
+            query = query.where(ContactAccount.role == role)
         return (await db.execute(query)).all()
 
     @staticmethod
@@ -245,6 +266,7 @@ class ContactLedgerService:
         limit: int = 100,
         *,
         export: bool = False,
+        role: str | None = None,
     ) -> ContactStatementData:
         """Inclusive Kabul dates; totals cover the full period despite movement paging."""
         await TenantOperations.authorize(
@@ -258,7 +280,7 @@ class ContactLedgerService:
         shop = await context.shop(db, contact.shop_id)
         start = day_cutoffs(date_from)[0] if date_from else None
         end = day_cutoffs(date_to)[1] if date_to else None
-        rows = await ContactLedgerService.rows(db, context, contact)
+        rows = await ContactLedgerService.rows(db, context, contact, role)
         totals, opening, precisions, movements = {}, {}, {}, []
         with localcontext() as ctx:
             ctx.prec = 60
@@ -329,10 +351,11 @@ class ContactLedgerService:
         contact_uuid: UUID,
         date_from: date | None,
         date_to: date | None,
+        role: str | None = None,
     ) -> str:
         """Export a complete Unicode CSV statement with safe spreadsheet cells."""
         statement = await ContactLedgerService.statement(
-            db, context, contact_uuid, date_from, date_to, export=True
+            db, context, contact_uuid, date_from, date_to, export=True, role=role
         )
         output = io.StringIO(newline="")
         writer = csv.writer(output)
