@@ -36,6 +36,7 @@ class AsyncValidationRoute(APIRoute):
 def create_app_router() -> APIRouter:
     from app.api.routers import (
         auth,
+        exchanges,
         finance,
         health,
         organizations,
@@ -53,5 +54,7 @@ def create_app_router() -> APIRouter:
     router.include_router(roles.router)
     router.include_router(tenant_resources.router)
     router.include_router(finance.router)
+    router.include_router(exchanges.router)
+    router.include_router(exchanges.exchange_router)
 
     return router
