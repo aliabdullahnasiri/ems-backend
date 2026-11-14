@@ -51,3 +51,12 @@ __all__ = [
 from app.models.contact import Contact, ContactAccount, ContactAttachment
 
 __all__ += ["Contact", "ContactAccount", "ContactAttachment"]
+
+from app.models.exchange import (
+    Exchange,
+    ExchangePaymentLink,
+    ExchangeRate,
+    ExchangeReversal,
+)
+
+__all__ += ["Exchange", "ExchangePaymentLink", "ExchangeRate", "ExchangeReversal"]
