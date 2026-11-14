@@ -91,7 +91,7 @@ async def create_exchange(
     shop_id: ShopID,
     retry_key: RetryKey,
 ):
-    """Post a fully paid cash exchange; identical Idempotency-Key retries replay."""
+    """Post a cash or credit exchange; identical Idempotency-Key retries replay."""
     return ExchangeResponse(
         data=await ExchangeService.create(db, context, shop_id, retry_key, data)
     )
