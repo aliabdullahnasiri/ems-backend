@@ -130,7 +130,7 @@ class ContactLedgerService:
             )
             if data.direction == "payable":
                 amount, cost = -amount, -cost
-            return await LedgerService._write(
+            result = await LedgerService._write(
                 db,
                 context,
                 contact.shop_id,
@@ -150,6 +150,22 @@ class ContactLedgerService:
                 ],
                 opening_key=opening_key,
             )
+            if data.role == "customer":
+                from app.services.obligation import ObligationService
+
+                await ObligationService.record(
+                    db,
+                    context,
+                    contact.shop_id,
+                    contact.id,
+                    result["id"],
+                    account_id,
+                    currency.id,
+                    data.direction,
+                    exact(abs(amount), currency.precision),
+                    exact(abs(cost), 2),
+                )
+            return result
 
         return await TenantOperations.execute_once(
             db,
