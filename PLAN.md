@@ -415,32 +415,34 @@ Implementation and API/accounting contracts: see `docs/exchanges.md`. Fully paid
 
 ## Phase 9 — Customer Debts and Payments
 
+Implementation and API/accounting contracts: see `docs/payments.md`. Cash/credit exchange legs, opening-debt backfill, customer obligations, explicit linked-exchange conversions and reversible payment allocations use the shared posting/retry boundary.
+
 ### Credit exchanges and settlement
 
-- [ ] Extend exchanges to support unpaid or partly paid amounts in their original currencies.
-- [ ] Change cash balances only for money actually received or paid.
-- [ ] Link each unpaid amount to the original exchange and customer.
-- [ ] Return original amount, paid amount, remaining amount, currency, and settlement history.
-- [ ] Record money received from customers and money paid to customers.
-- [ ] Allocate full or partial payments to specific outstanding obligations.
-- [ ] Prevent allocation beyond the payment amount or outstanding obligation.
-- [ ] Require an explicit linked exchange for settlement in a different currency; preserve its agreed rate.
-- [ ] Return immutable payment receipt data and updated statement balances after a successful posting.
-- [ ] Reverse a payment through linked entries and restore its allocations/outstanding amounts.
+- [x] Extend exchanges to support unpaid or partly paid amounts in their original currencies.
+- [x] Change cash balances only for money actually received or paid.
+- [x] Link each unpaid amount to the original exchange and customer.
+- [x] Return original amount, paid amount, remaining amount, currency, and settlement history.
+- [x] Record money received from customers and money paid to customers.
+- [x] Allocate full or partial payments to specific outstanding obligations.
+- [x] Prevent allocation beyond the payment amount or outstanding obligation.
+- [x] Require an explicit linked exchange for settlement in a different currency; preserve its agreed rate.
+- [x] Return immutable payment receipt data and updated statement balances after a successful posting.
+- [x] Reverse a payment through linked entries and restore its allocations/outstanding amounts.
 
 ### Endpoints
 
-- [ ] `POST /payments`
-- [ ] `GET /payments`
-- [ ] `GET /payments/{id}`
-- [ ] `GET /payments/{id}/receipt`
-- [ ] `GET /contacts/{id}/outstanding`
-- [ ] `POST /payments/{id}/reverse`
+- [x] `POST /payments`
+- [x] `GET /payments`
+- [x] `GET /payments/{id}`
+- [x] `GET /payments/{id}/receipt`
+- [x] `GET /contacts/{id}/outstanding`
+- [x] `POST /payments/{id}/reverse`
 
 ### Completion checks
 
-- [ ] An obligation of 10,000 AFN followed by a 6,000 AFN payment leaves 4,000 AFN outstanding.
-- [ ] Customer receivables, customer payables, partial payment, different-currency settlement, and reversal all reconcile.
+- [x] An obligation of 10,000 AFN followed by a 6,000 AFN payment leaves 4,000 AFN outstanding.
+- [x] Customer receivables, customer payables, partial payment, different-currency settlement, and reversal all reconcile.
 
 ---
 
