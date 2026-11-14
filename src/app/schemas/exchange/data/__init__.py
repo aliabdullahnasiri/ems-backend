@@ -2,6 +2,9 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from pydantic import Field
+
+from app.schemas.contact.data import ObligationData
 from app.schemas.finance.data import FinanceData, SettingsData
 
 
@@ -41,6 +44,13 @@ class QuoteData(FinanceData):
     profit_afn: str
     fees: str = "0.00"
     fee_currency: str = "AFN"
+    incoming_cash_amount: str | None = None
+    outgoing_cash_amount: str | None = None
+    incoming_unpaid_amount: str | None = None
+    outgoing_unpaid_amount: str | None = None
+    incoming_cash_book_afn: str | None = None
+    outgoing_cash_book_afn: str | None = None
+    outgoing_afn_rate: str | None = None
 
 
 class ReceiptData(FinanceData):
@@ -63,3 +73,4 @@ class ExchangeData(FinanceData):
     reference: str
     receipt: ReceiptData
     reversal_entry_id: int | None = None
+    obligations: list[ObligationData] = Field(default_factory=list)
