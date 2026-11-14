@@ -20,6 +20,9 @@ class ExchangeQuoteRequest(FinanceRequest):
     side: Literal["buy", "sell"]
     amount: str = Field(strict=True, max_length=40)
     rate: str = Field(strict=True, max_length=40)
+    incoming_cash_amount: str | None = Field(default=None, strict=True, max_length=40)
+    outgoing_cash_amount: str | None = Field(default=None, strict=True, max_length=40)
+    outgoing_afn_rate: str | None = Field(default=None, strict=True, max_length=40)
     # Explicit AFN valuation per incoming unit for a pair without AFN.
     incoming_afn_rate: str | None = Field(default=None, strict=True, max_length=40)
 

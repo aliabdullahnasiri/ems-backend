@@ -182,6 +182,20 @@ class ExchangeService:
             received, paid = (
                 (amount, quoted) if data.side == "buy" else (quoted, amount)
             )
+            cash_in = (
+                received
+                if data.incoming_cash_amount is None
+                else decimal_text(data.incoming_cash_amount, incoming.precision)
+            )
+            cash_out = (
+                paid
+                if data.outgoing_cash_amount is None
+                else decimal_text(data.outgoing_cash_amount, outgoing.precision)
+            )
+            if cash_in > received or cash_out > paid:
+                raise AppValidationError()
+            if (cash_in < received or cash_out < paid) and data.contact_id is None:
+                raise AppValidationError()
             account = await db.scalar(
                 context.query(LedgerAccount).where(
                     LedgerAccount.cashbox_id == data.cashbox_id,
@@ -193,13 +207,32 @@ class ExchangeService:
                 if account
                 else (Decimal(0), Decimal(0))
             )
-            if paid > available:
+            if cash_out > available:
                 raise ConflictError()
-            payout_cost = (
-                book
-                if paid == available
-                else Decimal(exact(book * paid / available, 2))
+            cash_cost = (
+                Decimal(0)
+                if not cash_out
+                else (
+                    book
+                    if cash_out == available
+                    else Decimal(exact(book * cash_out / available, 2))
+                )
             )
+            unpaid_cost = Decimal(0)
+            outgoing_valuation = None
+            if cash_out < paid:
+                if outgoing.code == "AFN":
+                    unpaid_cost = paid - cash_out
+                else:
+                    outgoing_valuation = decimal_text(data.outgoing_afn_rate, 8)
+                    if outgoing_valuation <= 0:
+                        raise AppValidationError()
+                    unpaid_cost = Decimal(
+                        exact((paid - cash_out) * outgoing_valuation, 2)
+                    )
+            if outgoing_valuation is None and data.outgoing_afn_rate is not None:
+                raise AppValidationError()
+            payout_cost = cash_cost + unpaid_cost
             valuation = None
             if incoming.code == "AFN":
                 incoming_cost = received
@@ -235,6 +268,20 @@ class ExchangeService:
                 incoming_book_afn=exact(incoming_cost, 2),
                 outgoing_book_afn=exact(payout_cost, 2),
                 profit_afn=exact(incoming_cost - payout_cost, 2),
+                incoming_cash_amount=exact(cash_in, incoming.precision),
+                outgoing_cash_amount=exact(cash_out, outgoing.precision),
+                incoming_unpaid_amount=exact(received - cash_in, incoming.precision),
+                outgoing_unpaid_amount=exact(paid - cash_out, outgoing.precision),
+                incoming_cash_book_afn=exact(
+                    incoming_cost
+                    if cash_in == received
+                    else incoming_cost * cash_in / received,
+                    2,
+                ),
+                outgoing_cash_book_afn=exact(cash_cost, 2),
+                outgoing_afn_rate=exact(outgoing_valuation, 8)
+                if outgoing_valuation is not None
+                else None,
             )
 
     @staticmethod
@@ -270,8 +317,8 @@ class ExchangeService:
                 incoming_id,
                 "cash",
                 "cash",
-                values.incoming_amount,
-                values.incoming_book_afn,
+                values.incoming_cash_amount,
+                values.incoming_cash_book_afn,
                 data.cashbox_id,
             )
             await leg(
@@ -285,8 +332,8 @@ class ExchangeService:
                 outgoing_id,
                 "cash",
                 "cash",
-                "-" + values.outgoing_amount,
-                "-" + values.outgoing_book_afn,
+                "-" + (values.outgoing_cash_amount or "0.00"),
+                "-" + (values.outgoing_cash_book_afn or "0.00"),
                 data.cashbox_id,
             )
             await leg(
@@ -296,6 +343,52 @@ class ExchangeService:
                 values.outgoing_amount,
                 values.outgoing_book_afn,
             )
+            # Unpaid portions are contact ledger legs, never physical cash.
+            from app.services.contact_ledger import ContactLedgerService
+
+            obligations = []
+            for currency_id, direction, unpaid, total_book, cash_book in (
+                (
+                    incoming_id,
+                    "receivable",
+                    values.incoming_unpaid_amount,
+                    values.incoming_book_afn,
+                    values.incoming_cash_book_afn,
+                ),
+                (
+                    outgoing_id,
+                    "payable",
+                    values.outgoing_unpaid_amount,
+                    values.outgoing_book_afn,
+                    values.outgoing_cash_book_afn,
+                ),
+            ):
+                if Decimal(unpaid or "0"):
+                    if data.contact_id is None:
+                        raise AppValidationError()
+                    customer = await context.reference(
+                        db, Contact, data.contact_id, shop_id=shop_id
+                    )
+                    account_id = await ContactLedgerService.account(
+                        db, context, customer, "customer", direction, currency_id
+                    )
+                    with localcontext() as ctx:
+                        ctx.prec = 60
+                        cost = Decimal(total_book) - Decimal(cash_book or "0")
+                    sign = 1 if direction == "receivable" else -1
+                    currency = await context.get(db, Currency, currency_id)
+                    lines.append(
+                        {
+                            "account_id": account_id,
+                            "amount": exact(
+                                Decimal(unpaid or "0") * sign, currency.precision
+                            ),
+                            "book_afn": exact(cost * sign, 2),
+                        }
+                    )
+                    obligations.append(
+                        (account_id, currency_id, direction, unpaid, exact(cost, 2))
+                    )
             profit = Decimal(values.profit_afn)
             if profit:
                 afn = await db.scalar(
@@ -368,16 +461,41 @@ class ExchangeService:
             )
             db.add(exchange)
             await db.flush()
+            from app.services.obligation import ObligationService
+
+            for account_id, currency_id, direction, unpaid, cost in obligations:
+                await ObligationService.record(
+                    db,
+                    context,
+                    shop_id,
+                    data.contact_id,
+                    entry["id"],
+                    account_id,
+                    currency_id,
+                    direction,
+                    unpaid,
+                    cost,
+                    exchange_id=exchange.id,
+                )
             return (
                 await ExchangeService.exchange_data(db, context, exchange)
             ).model_dump(mode="json")
 
+        # Preserve hashes of Phase 8 retries when the new credit fields are omitted.
+        payload = data.model_dump()
+        for field in (
+            "incoming_cash_amount",
+            "outgoing_cash_amount",
+            "outgoing_afn_rate",
+        ):
+            if payload[field] is None:
+                payload.pop(field)
         return await TenantOperations.execute_once(
             db,
             context,
             "exchange:create",
             retry_key,
-            {"shop_id": shop_id, **data.model_dump()},
+            {"shop_id": shop_id, **payload},
             "exchange:create",
             execute,
         )
@@ -390,7 +508,19 @@ class ExchangeService:
                 ExchangeReversal.exchange_id == exchange.id
             )
         )
+        from app.models.payment import CustomerObligation
+        from app.services.obligation import ObligationService
+
+        obligations = [
+            await ObligationService.data(db, context, row)
+            for row in await db.scalars(
+                context.query(CustomerObligation)
+                .where(CustomerObligation.exchange_id == exchange.id)
+                .order_by(CustomerObligation.id)
+            )
+        ]
         return ExchangeData(
+            obligations=obligations,
             id=exchange.id,
             uuid=exchange.uuid,
             shop_id=exchange.shop_id,
@@ -479,7 +609,7 @@ class ExchangeService:
                 )
             ):
                 raise ConflictError()
-            # A future payment workflow must register every linked payment here.
+            # Payment postings register every allocated exchange here.
             for link in await db.scalars(
                 context.query(ExchangePaymentLink).where(
                     ExchangePaymentLink.exchange_id == exchange.id
