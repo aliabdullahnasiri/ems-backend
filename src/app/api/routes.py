@@ -40,6 +40,7 @@ def create_app_router() -> APIRouter:
         finance,
         health,
         organizations,
+        payments,
         roles,
         tenant_resources,
         users,
@@ -56,5 +57,7 @@ def create_app_router() -> APIRouter:
     router.include_router(finance.router)
     router.include_router(exchanges.router)
     router.include_router(exchanges.exchange_router)
+    router.include_router(payments.router)
+    router.include_router(payments.contact_router)
 
     return router
