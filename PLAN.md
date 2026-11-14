@@ -372,42 +372,44 @@ Implementation: `docs/contacts.md`. Phase 7 uses Phase 6 revision `f6a001c9d210`
 
 ## Phase 8 — Currency Exchange and Receipts
 
+Implementation and API/accounting contracts: see `docs/exchanges.md`. Fully paid cash exchanges, immutable receipts and owner-approved reversals use the shared Phase 6 posting/retry boundary. Credit settlement remains in Phase 9.
+
 ### Rates and cash exchanges
 
-- [ ] Set buying and selling rates from the shop’s perspective.
-- [ ] Store and return the currency pair and rate direction explicitly; an illustrative rate of 70 AFN per USD is not a current market quote.
-- [ ] Preserve rate history, record who entered each rate, and expose history through date filters on `GET /rates`.
-- [ ] Accept customer, cashbox, currencies, amount, and agreed rate; validate ownership, active status, and staff permission.
-- [ ] Provide a quote endpoint returning exact incoming/outgoing amounts and rounding without changing balances; revalidate and recalculate when posting.
-- [ ] Validate amounts, currency pairs, precision, and available payout cash.
-- [ ] Save the agreed rate, direction, calculated amounts, and rounding with the transaction.
-- [ ] Post both currency movements together with their accounting and cost effects.
-- [ ] Keep historical transactions unchanged when the rate table changes.
-- [ ] Support transaction search and filters by date, reference, cashier, customer, and currency.
-- [ ] Reverse an exchange only with authorized approval, a reason, and a link to the original transaction.
-- [ ] Preserve original and reversal entries; prevent repeated reversal and handle linked payments before reversal.
+- [x] Set buying and selling rates from the shop’s perspective.
+- [x] Store and return the currency pair and rate direction explicitly; an illustrative rate of 70 AFN per USD is not a current market quote.
+- [x] Preserve rate history, record who entered each rate, and expose history through date filters on `GET /rates`.
+- [x] Accept customer, cashbox, currencies, amount, and agreed rate; validate ownership, active status, and staff permission.
+- [x] Provide a quote endpoint returning exact incoming/outgoing amounts and rounding without changing balances; revalidate and recalculate when posting.
+- [x] Validate amounts, currency pairs, precision, and available payout cash.
+- [x] Save the agreed rate, direction, calculated amounts, and rounding with the transaction.
+- [x] Post both currency movements together with their accounting and cost effects.
+- [x] Keep historical transactions unchanged when the rate table changes.
+- [x] Support transaction search and filters by date, reference, cashier, customer, and currency.
+- [x] Reverse an exchange only with authorized approval, a reason, and a link to the original transaction.
+- [x] Preserve original and reversal entries; prevent repeated reversal and handle linked payments before reversal.
 
 ### Receipt data
 
-- [ ] Generate a unique receipt reference with shop, date, cashier, currencies, amounts, rate, and applicable fees.
-- [ ] Return receipt data containing the original transaction values and Unicode shop/customer details.
-- [ ] Repeated receipt retrieval must return the same financial details without posting a new transaction.
+- [x] Generate a unique receipt reference with shop, date, cashier, currencies, amounts, rate, and applicable fees.
+- [x] Return receipt data containing the original transaction values and Unicode shop/customer details.
+- [x] Repeated receipt retrieval must return the same financial details without posting a new transaction.
 
 ### Endpoints
 
-- [ ] `POST /rates`
-- [ ] `GET /rates`
-- [ ] `POST /exchanges/quote`
-- [ ] `POST /exchanges`
-- [ ] `GET /exchanges`
-- [ ] `GET /exchanges/{id}`
-- [ ] `GET /exchanges/{id}/receipt`
-- [ ] `POST /exchanges/{id}/reverse`
+- [x] `POST /rates`
+- [x] `GET /rates`
+- [x] `POST /exchanges/quote`
+- [x] `POST /exchanges`
+- [x] `GET /exchanges`
+- [x] `GET /exchanges/{id}`
+- [x] `GET /exchanges/{id}/receipt`
+- [x] `POST /exchanges/{id}/reverse`
 
 ### Completion checks
 
-- [ ] Buying 100 USD at an illustrative 70 AFN/USD increases USD cash by 100 and decreases AFN cash by 7,000.
-- [ ] Selling currency, reversing an exchange, changing rates later, and repeated receipt retrieval produce the expected balances/history.
+- [x] Buying 100 USD at an illustrative 70 AFN/USD increases USD cash by 100 and decreases AFN cash by 7,000.
+- [x] Selling currency, reversing an exchange, changing rates later, and repeated receipt retrieval produce the expected balances/history.
 
 ---
 
