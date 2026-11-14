@@ -448,61 +448,63 @@ Implementation and API/accounting contracts: see `docs/payments.md`. Cash/credit
 
 ## Phase 10 — Hawala and Agent Settlements
 
+Implementation and API/accounting contracts: see `docs/hawalas.md`. Manual incoming/outgoing instructions, verified payout history, cancellation/refund policy, owner dispute reviews, agent obligations and allocated settlements use the shared ledger/retry boundary. Partner payout confirmation and external settlement records imply no automatic transfer or notification.
+
 ### Transfer records
 
-- [ ] Support incoming and outgoing hawala as distinct directions.
-- [ ] Store sender, recipient, destination, partner agent, and unique transfer reference.
-- [ ] Store collection currency/amount, payout currency/amount, agreed rate, customer fee, and agent fee separately.
-- [ ] Agree and record when fees are earned and which fees are refundable.
-- [ ] Keep draft records free of financial postings; validate required details before confirmation.
-- [ ] Support draft, pending, paid, and cancelled states with controlled transitions.
-- [ ] Separate customer funding, beneficiary payout, agent obligations/settlement, and earned commission in the ledger.
-- [ ] For outgoing transfers, record collected funds and the partner’s payout obligation.
-- [ ] For incoming transfers, verify the partner instruction before authorizing a local payout.
-- [ ] Track payout status separately from agent settlement status.
+- [x] Support incoming and outgoing hawala as distinct directions.
+- [x] Store sender, recipient, destination, partner agent, and unique transfer reference.
+- [x] Store collection currency/amount, payout currency/amount, agreed rate, customer fee, and agent fee separately.
+- [x] Agree and record when fees are earned and which fees are refundable.
+- [x] Keep draft records free of financial postings; validate required details before confirmation.
+- [x] Support draft, pending, paid, and cancelled states with controlled transitions.
+- [x] Separate customer funding, beneficiary payout, agent obligations/settlement, and earned commission in the ledger.
+- [x] For outgoing transfers, record collected funds and the partner’s payout obligation.
+- [x] For incoming transfers, verify the partner instruction before authorizing a local payout.
+- [x] Track payout status separately from agent settlement status.
 
 ### Payout, cancellation, and refund
 
-- [ ] Record beneficiary verification, payout operator, timestamp, and evidence/reference.
-- [ ] Distinguish a payout from the shop’s cashbox from manually confirmed payout by a partner; only local cash payouts reduce the shop’s cashbox.
-- [ ] Validate cash availability for a local payout and post its effects atomically.
-- [ ] Prevent duplicate payout and conflicting payout/cancellation transitions.
-- [ ] Require confirmation that a partner has not paid before cancelling an outgoing instruction.
-- [ ] Block normal cancellation after payout and route disputed/paid corrections to owner review.
-- [ ] Track refund due separately from refund actually paid, using the stored refund policy.
-- [ ] Post each refund once, link it to the original transfer, and prevent excess refunds.
-- [ ] Return the cancellation, payout, refund, and correction history with authorized transfer detail requests.
+- [x] Record beneficiary verification, payout operator, timestamp, and evidence/reference.
+- [x] Distinguish a payout from the shop’s cashbox from manually confirmed payout by a partner; only local cash payouts reduce the shop’s cashbox.
+- [x] Validate cash availability for a local payout and post its effects atomically.
+- [x] Prevent duplicate payout and conflicting payout/cancellation transitions.
+- [x] Require confirmation that a partner has not paid before cancelling an outgoing instruction.
+- [x] Block normal cancellation after payout and route disputed/paid corrections to owner review.
+- [x] Track refund due separately from refund actually paid, using the stored refund policy.
+- [x] Post each refund once, link it to the original transfer, and prevent excess refunds.
+- [x] Return the cancellation, payout, refund, and correction history with authorized transfer detail requests.
 
 ### Agent settlements
 
-- [ ] Return agent receivables/payables separately by currency.
-- [ ] Link full or partial settlements to outstanding agent obligations.
-- [ ] Record settlement method, reference, evidence, and operator; change local cash only when it actually moves.
-- [ ] Prevent excess allocation and silent netting across different currencies.
-- [ ] Provide transfer receipt data and agent settlement statement responses/exports.
+- [x] Return agent receivables/payables separately by currency.
+- [x] Link full or partial settlements to outstanding agent obligations.
+- [x] Record settlement method, reference, evidence, and operator; change local cash only when it actually moves.
+- [x] Prevent excess allocation and silent netting across different currencies.
+- [x] Provide transfer receipt data and agent settlement statement responses/exports.
 
 ### Endpoints
 
-- [ ] `POST /hawalas`
-- [ ] `GET /hawalas`
-- [ ] `GET /hawalas/{id}`
-- [ ] `PATCH /hawalas/{id}` — draft details only.
-- [ ] `POST /hawalas/{id}/confirm`
-- [ ] `POST /hawalas/{id}/pay`
-- [ ] `POST /hawalas/{id}/cancel`
-- [ ] `POST /hawalas/{id}/refund`
-- [ ] `GET /hawalas/{id}/receipt`
-- [ ] `POST /agent-settlements`
-- [ ] `GET /agent-settlements`
-- [ ] `GET /agent-settlements/{id}`
-- [ ] `POST /agent-settlements/{id}/reverse`
+- [x] `POST /hawalas`
+- [x] `GET /hawalas`
+- [x] `GET /hawalas/{id}`
+- [x] `PATCH /hawalas/{id}` — draft details only.
+- [x] `POST /hawalas/{id}/confirm`
+- [x] `POST /hawalas/{id}/pay`
+- [x] `POST /hawalas/{id}/cancel`
+- [x] `POST /hawalas/{id}/refund`
+- [x] `GET /hawalas/{id}/receipt`
+- [x] `POST /agent-settlements`
+- [x] `GET /agent-settlements`
+- [x] `GET /agent-settlements/{id}`
+- [x] `POST /agent-settlements/{id}/reverse`
 
 ### Completion checks
 
-- [ ] An outgoing transfer can be funded, confirmed paid by its partner, and settled without counting principal as revenue or reducing local cash twice.
-- [ ] An incoming transfer can be verified and paid locally with the correct cash and agent balance effects.
-- [ ] Cancellation, refund, duplicate payout attempts, and partial agent settlements reconcile correctly.
-- [ ] API documentation distinguishes local payouts, manually confirmed partner payouts, and agent settlements; no automatic partner transfer or notification is implied.
+- [x] An outgoing transfer can be funded, confirmed paid by its partner, and settled without counting principal as revenue or reducing local cash twice.
+- [x] An incoming transfer can be verified and paid locally with the correct cash and agent balance effects.
+- [x] Cancellation, refund, duplicate payout attempts, and partial agent settlements reconcile correctly.
+- [x] API documentation distinguishes local payouts, manually confirmed partner payouts, and agent settlements; no automatic partner transfer or notification is implied.
 
 ---
 
