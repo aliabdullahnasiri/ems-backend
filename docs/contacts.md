@@ -143,3 +143,11 @@ failed-post rollback, duplicate and concurrent retries, exact gross balances,
 linked journal corrections, Kabul cutoff boundaries, movement pagination and
 CSV exports. The migration tests apply and reverse the actual revisions with
 foreign keys enabled and compare the resulting schema to ORM metadata.
+
+## Agent settlements (Phase 10)
+
+See [hawalas.md](hawalas.md) for allocatable agent openings, transfer principal/fee
+obligations, manual cash/external settlements and linked reversals. The existing
+contact balances remain ledger-derived, with gross agent receivables/payables per
+currency. Agent-only statements and CSV exports are available through
+`GET /agent-settlements/statement?agent_uuid=...`; customer-role rows remain separate.
