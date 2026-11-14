@@ -60,3 +60,12 @@ from app.models.exchange import (
 )
 
 __all__ += ["Exchange", "ExchangePaymentLink", "ExchangeRate", "ExchangeReversal"]
+
+from app.models.payment import (
+    CustomerObligation,
+    Payment,
+    PaymentAllocation,
+    PaymentReversal,
+)
+
+__all__ += ["CustomerObligation", "Payment", "PaymentAllocation", "PaymentReversal"]
