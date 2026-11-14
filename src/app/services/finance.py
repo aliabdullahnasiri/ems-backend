@@ -411,7 +411,14 @@ class LedgerService:
                 amount = decimal_text(item["amount"], currency.precision, signed=True)
                 book = decimal_text(item["book_afn"], 2, signed=True)
                 if (
-                    amount == 0
+                    (
+                        amount == 0
+                        and not (
+                            account.kind == "clearing"
+                            and currency.code != "AFN"
+                            and book != 0
+                        )
+                    )
                     or (amount > 0 and book < 0)
                     or (amount < 0 and book > 0)
                 ):
