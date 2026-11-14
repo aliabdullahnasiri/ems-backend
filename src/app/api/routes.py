@@ -38,6 +38,7 @@ def create_app_router() -> APIRouter:
         auth,
         exchanges,
         finance,
+        hawalas,
         health,
         organizations,
         payments,
@@ -59,5 +60,8 @@ def create_app_router() -> APIRouter:
     router.include_router(exchanges.exchange_router)
     router.include_router(payments.router)
     router.include_router(payments.contact_router)
+    router.include_router(hawalas.router)
+    router.include_router(hawalas.agent_router)
+    router.include_router(hawalas.contact_router)
 
     return router
