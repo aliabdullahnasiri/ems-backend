@@ -69,3 +69,25 @@ from app.models.payment import (
 )
 
 __all__ += ["CustomerObligation", "Payment", "PaymentAllocation", "PaymentReversal"]
+
+from app.models.hawala import (
+    AgentAllocation,
+    AgentObligation,
+    AgentObligationVoid,
+    AgentSettlement,
+    AgentSettlementReversal,
+    Hawala,
+    HawalaEvent,
+    HawalaRefund,
+)
+
+__all__ += [
+    "AgentAllocation",
+    "AgentObligation",
+    "AgentObligationVoid",
+    "AgentSettlement",
+    "AgentSettlementReversal",
+    "Hawala",
+    "HawalaEvent",
+    "HawalaRefund",
+]
