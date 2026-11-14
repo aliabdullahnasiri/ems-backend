@@ -1,5 +1,8 @@
 # Phase 6 financial foundation
 
+Phase 10 implements manual hawala and agent settlement workflows using this
+posting kernel; see [hawalas.md](hawalas.md) for payout, refund and fee contracts.
+
 All paths below have the `/api/v1` prefix and require an authenticated active user,
 selected active organization, and active membership. Shop-scoped endpoints require
 `?shop_id=<integer>` and validate that shop inside the selected organization.
