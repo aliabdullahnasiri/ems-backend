@@ -54,7 +54,10 @@ ASCII digits, a dot, and the currency's fixed decimal precision. Journal credits
 have a minus sign. AFN book amounts always have two decimals.
 
 `financial_values.exact` rounds calculated results using `ROUND_HALF_UP` with a
-60-digit working context. Workflow services must calculate using Decimal and
+60-digit working context. Foreign-currency clearing also permits a nonzero AFN book adjustment with zero
+original units for realized settlement differences. Cash/AFN zero-unit lines and
+zero/zero lines are rejected. See `payments.md` for the paired clearing entries.
+Workflow services must calculate using Decimal and
 explicitly round only at documented posting boundaries. Original-currency amounts
 and AFN carrying values are independent fields; the kernel requires AFN-currency
 amounts to equal their book values. It rejects negative cash amounts/carrying value
