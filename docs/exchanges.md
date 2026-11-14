@@ -1,5 +1,9 @@
 # Phase 8 — Currency exchange and receipts
 
+Phase 9 extends these contracts with partial/credit cash amounts, customer
+obligations and payment settlement: see [payments.md](payments.md). The fully paid
+request form described below remains supported.
+
 All endpoints use `/api/v1`, the verified selected organization and an active
 `?shop_id=<integer>`. Path identifiers are exchange UUIDs; body references are
 integer IDs returned by currency, cashbox and contact APIs. The contact is optional
@@ -109,8 +113,7 @@ returns 409; an identical retry replays the original result.
 `exchange_payment_links` is the integration contract for Phase 9: payment services
 must register each linked payment journal in the same transaction. Any linked
 payment without its own posted linked reversal blocks exchange reversal. Payment
-services must restore their allocations before publishing that reversal. This
-phase introduces the guard and retained link schema, not credit/payment APIs.
+services must restore their allocations before publishing that reversal. Phase 9 implements this contract and the credit/payment APIs; see `payments.md`.
 
 Migration `f8c003e2f430` follows Phase 7 and creates append-only rate, exchange,
 reversal and payment-link tables with organization/shop/actor composite foreign
