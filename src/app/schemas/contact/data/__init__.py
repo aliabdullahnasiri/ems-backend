@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from app.schemas.base.model import Model
+from app.schemas.finance.data import FinanceData
 
 
 class ContactData(Model):
@@ -57,3 +58,31 @@ class ContactStatementData(Model):
     offset: int
     limit: int
     total_movements: int
+
+
+class SettlementData(FinanceData):
+    payment_id: int
+    payment_uuid: UUID
+    reference: str
+    entry_id: int
+    amount: str
+    book_afn: str
+    created_at: str
+    reversal_entry_id: int | None
+
+
+class ObligationData(FinanceData):
+    id: int
+    uuid: UUID
+    contact_id: int
+    exchange_id: int | None
+    source_entry_id: int
+    currency_id: int
+    currency: str
+    direction: str
+    original_amount: str
+    paid_amount: str
+    remaining_amount: str
+    remaining_book_afn: str
+    is_reversed: bool
+    settlements: list[SettlementData]
