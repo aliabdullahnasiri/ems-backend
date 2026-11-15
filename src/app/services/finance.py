@@ -3,7 +3,7 @@
 Methods flush only. Request middleware or the calling job owns the commit.
 """
 
-from datetime import UTC
+from datetime import UTC, datetime
 from decimal import Decimal, localcontext
 from typing import ClassVar
 from uuid import UUID
@@ -383,6 +383,7 @@ class LedgerService:
         *,
         opening_key=None,
         reversal_of_id=None,
+        closing_id=None,
     ):
         """Validate every leg before inserting and sealing one balanced journal."""
         if db.bind.dialect.name in {"postgresql", "mysql"}:
@@ -391,6 +392,11 @@ class LedgerService:
                 # A pre-lock snapshot must never authorize a stale cash balance.
                 raise ConflictError()
         await context.shop(db, shop_id)
+        from app.services.daily import ClosingService
+
+        await LedgerService.lock(db, context)
+        posting_time = datetime.now(UTC)
+        await ClosingService.guard(db, context, shop_id, posting_time, closing_id)
         if (
             not isinstance(reason, str)
             or not reason.strip()
@@ -453,6 +459,7 @@ class LedgerService:
             reason=reason,
             opening_key=opening_key,
             reversal_of_id=reversal_of_id,
+            created_at=posting_time,
         )
         db.add(entry)
         await db.flush()

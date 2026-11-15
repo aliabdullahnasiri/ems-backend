@@ -91,3 +91,21 @@ __all__ += [
     "HawalaEvent",
     "HawalaRefund",
 ]
+
+from app.models.daily import (
+    BusinessDay,
+    CashTransfer,
+    ClosingConfirmation,
+    DayClosing,
+    Expense,
+    ExpenseCategory,
+)
+
+__all__ += [
+    "BusinessDay",
+    "CashTransfer",
+    "ClosingConfirmation",
+    "DayClosing",
+    "Expense",
+    "ExpenseCategory",
+]

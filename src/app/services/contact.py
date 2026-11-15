@@ -222,6 +222,12 @@ class ContactService:
         await context.reference(
             db, type(attachment), attachment.id, shop_id=contact.shop_id
         )
+        from app.models.daily import Expense
+
+        if await db.scalar(
+            context.query(Expense).where(Expense.attachment_id == attachment.id)
+        ):
+            raise AuthorizationError()
         link = context.new(
             ContactAttachment,
             shop_id=contact.shop_id,

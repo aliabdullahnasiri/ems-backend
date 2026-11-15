@@ -323,4 +323,10 @@ class TenantOperations:
         from app.services.contact import ContactService
 
         await ContactService.authorize_attachment(db, context, attachment.id)
+        from app.models.daily import Expense
+
+        if await db.scalar(
+            context.query(Expense).where(Expense.attachment_id == attachment.id)
+        ):
+            await TenantOperations.authorize(db, context, "report:read")
         return attachment
