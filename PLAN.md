@@ -561,36 +561,38 @@ Implementation and API/accounting contracts: see `docs/daily-operations.md`. Mig
 
 ### Dashboard aggregation and financial reports
 
-- [ ] Return cash available by cashbox and currency.
-- [ ] Return customer receivables and payables separately.
-- [ ] Return agent receivables/payables, pending hawala, and refunds due.
-- [ ] Aggregate exchange volume, earned fees, agent fees, and operating expenses for the selected period.
-- [ ] Calculate realized exchange profit using a verified weighted-average currency cost method in AFN.
-- [ ] Document AFN conversion/book-value treatment for non-AFN fees and expenses.
-- [ ] Handle opening currency costs and exchange reversals consistently in the cost calculation.
-- [ ] Exclude customer funds, hawala principal, agent settlements, and unrealized gains from realized profit.
-- [ ] Return original-currency totals and include the conversion rate, valuation basis, and cutoff for any AFN-equivalent values.
-- [ ] Provide daily reports, cash movements, outstanding balances, profit details, and audit history.
-- [ ] Add date/cashier/currency/contact filters where relevant.
-- [ ] Support JSON responses and CSV exports with shop name, filters, currency information, and generation time.
-- [ ] Restrict sensitive financial and audit reports by role.
+- [x] Return cash available by cashbox and currency.
+- [x] Return customer receivables and payables separately.
+- [x] Return agent receivables/payables, pending hawala, and refunds due.
+- [x] Aggregate exchange volume, earned fees, agent fees, and operating expenses for the selected period.
+- [x] Calculate realized exchange profit using a verified weighted-average currency cost method in AFN.
+- [x] Document AFN conversion/book-value treatment for non-AFN fees and expenses.
+- [x] Handle opening currency costs and exchange reversals consistently in the cost calculation.
+- [x] Exclude customer funds, hawala principal, agent settlements, and unrealized gains from realized profit.
+- [x] Return original-currency totals and include the conversion rate, valuation basis, and cutoff for any AFN-equivalent values.
+- [x] Provide daily reports, cash movements, outstanding balances, profit details, and audit history.
+- [x] Add date/cashier/currency/contact filters where relevant.
+- [x] Support JSON responses and CSV exports with shop name, filters, currency information, and generation time.
+- [x] Restrict sensitive financial and audit reports by role.
 
 ### Endpoints
 
-- [ ] `GET /dashboard`
-- [ ] `GET /reports/daily`
-- [ ] `GET /reports/cash`
-- [ ] `GET /reports/outstanding`
-- [ ] `GET /reports/profit`
-- [ ] `GET /reports/hawala`
+- [x] `GET /dashboard`
+- [x] `GET /reports/daily`
+- [x] `GET /reports/cash`
+- [x] `GET /reports/outstanding`
+- [x] `GET /reports/profit`
+- [x] `GET /reports/hawala`
 
 ### Completion checks
 
-- [ ] Report cash and outstanding balances match the ledger for the same cutoff and filters.
+- [x] Report cash and outstanding balances match the ledger for the same cutoff and filters.
 - [ ] Verify profit calculations against owner/accountant-reviewed examples covering currency purchases, sales, opening holdings, fees, expenses, and reversals.
-- [ ] A closed-day report can be reproduced without later entries silently changing its snapshot.
+- [x] A closed-day report can be reproduced without later entries silently changing its snapshot.
 
 ---
+
+Implementation and valuation policy: [docs/reports.md](docs/reports.md). Automated examples are implemented; owner/accountant acceptance remains pending.
 
 ## Phase 13 — Backend Reliability, Deployment, and Acceptance
 
