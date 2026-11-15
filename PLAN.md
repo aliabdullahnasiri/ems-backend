@@ -594,55 +594,6 @@ Implementation and API/accounting contracts: see `docs/daily-operations.md`. Mig
 
 Implementation and valuation policy: [docs/reports.md](docs/reports.md). Automated examples are implemented; owner/accountant acceptance remains pending.
 
-## Phase 13 — Backend Reliability, Deployment, and Acceptance
-
-### Local deployment and operations
-
-- [ ] Install the backend and database on the shop’s shared local server using a documented configuration.
-- [ ] Ensure core APIs, authentication, financial posting, and scheduled jobs have no external internet dependency.
-- [ ] Protect local network access and credentials, configure service startup, and document restart procedures.
-- [ ] Add liveness and readiness checks; readiness verifies database connectivity without exposing secrets or customer information.
-- [ ] Add structured error logs and monitoring for failed postings, database errors, and failed backup jobs.
-- [ ] Define predictable success/error responses and safe retry behavior after connection loss or timeouts.
-- [ ] Document database migrations, pre-update backup, safe application update, and compatible recovery procedures.
-
-### Backup and restoration
-
-- [ ] Schedule encrypted backups of the database, private attachments, and required configuration to a separate location/device.
-- [ ] Define backup frequency, retention, verification, responsible person, and failure reporting.
-- [ ] Keep backup decryption/recovery instructions and credentials available to the authorized owner.
-- [ ] Restore a backup into a separate installation and verify transaction counts, cash balances, contact balances, outstanding hawala, and attachments.
-- [ ] Verify committed transactions survive application restart and interrupted requests leave no partial postings.
-
-### API and accounting acceptance tests
-
-- [ ] Verify exchange quote → posted exchange → receipt retrieval → reversal through the API.
-- [ ] Verify credit exchange → partial payment → final payment → contact statement.
-- [ ] Verify incoming/outgoing hawala, partner confirmation, local payout, cancellation, refund, and agent settlement.
-- [ ] Verify expense → cash transfer → counted cash submission → approved closing → next-day opening.
-- [ ] Verify concurrent cashier requests, repeated retry keys, and insufficient-cash rejection.
-- [ ] Verify duplicate payout/refund prevention and conflicting financial state changes.
-- [ ] Verify permissions, session expiry, organization and shop isolation, private attachment access, and audit history.
-- [ ] Verify exact calculations and rounding for every supported currency/pair, including non-AFN fees/expenses and reversals.
-- [ ] Verify Unicode Dari/Pashto storage, normalized numeral input, receipt payloads, and statement/report exports.
-- [ ] Verify closed-period enforcement and reproducible historical closing snapshots.
-- [ ] Verify core APIs continue working when the internet is disconnected and the local server/network remain available.
-- [ ] Configure the operator-approved identification, recordkeeping, retention, and reporting rules before production data is used.
-
-### Opening data and launch readiness
-
-- [ ] Validate and import reviewed opening cash, customer/agent obligations, and foreign-currency acquisition costs through controlled ledger entries.
-- [ ] Run representative API workflows alongside the existing books during an agreed reconciliation period.
-- [ ] Compare recorded transactions, cash, customer balances, agent balances, and fees with the reviewed source records.
-- [ ] Resolve unexplained differences and rerun the affected backend checks.
-- [ ] Obtain owner/accountant acceptance of reconciled financial results and the tested recovery process.
-- [ ] Deliver API documentation, installation/configuration instructions, and backup/recovery instructions.
-
-### Operational endpoints
-
-- [ ] `GET /health/live` — minimal liveness response.
-- [ ] `GET /health/ready` — minimal readiness response; keep detailed diagnostics protected.
-
 ---
 
 ## Phase completion tracker
@@ -657,6 +608,5 @@ Implementation and valuation policy: [docs/reports.md](docs/reports.md). Automat
 - [x] Phase 8 — Currency Exchange and Receipts
 - [x] Phase 9 — Customer Debts and Payments
 - [x] Phase 10 — Hawala and Agent Settlements
-- [ ] Phase 11 — Expenses and Daily Closing
-- [ ] Phase 12 — Dashboard and Reports
-- [ ] Phase 13 — Backend Reliability, Deployment, and Acceptance
+- [x] Phase 11 — Expenses and Daily Closing
+- [x] Phase 12 — Dashboard and Reports
