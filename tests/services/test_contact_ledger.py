@@ -3,14 +3,6 @@ from decimal import Decimal
 
 import pytest
 import pytest_asyncio
-from app.models.finance import (
-    Currency,
-    JournalEntry,
-    JournalLine,
-    JournalPosting,
-    LedgerAccount,
-)
-from app.services.finance import LedgerService
 from sqlalchemy import select
 
 from app.core.exceptions import (
@@ -20,6 +12,13 @@ from app.core.exceptions import (
     NotFoundError,
 )
 from app.models.contact import ContactAccount
+from app.models.finance import (
+    Currency,
+    JournalEntry,
+    JournalLine,
+    JournalPosting,
+    LedgerAccount,
+)
 from app.schemas.contact.request import (
     ContactCreateRequest,
     ContactOpeningRequest,
@@ -27,6 +26,7 @@ from app.schemas.contact.request import (
 )
 from app.services.contact import ContactService
 from app.services.contact_ledger import ContactLedgerService
+from app.services.finance import LedgerService
 from tests.services.test_tenant_operations import tenants as tenant_fixture
 
 tenants = pytest_asyncio.fixture(tenant_fixture.__wrapped__)
@@ -186,7 +186,8 @@ async def test_dates_pagination_running_balances_and_csv(db_session, contact_led
     )
 
     def make_entry(**kwargs):
-        return real_entry(created_at=next(times), **kwargs)
+        kwargs["created_at"] = next(times)
+        return real_entry(**kwargs)
 
     with patch.object(finance, "JournalEntry", side_effect=make_entry):
         await ContactLedgerService.opening(
