@@ -649,10 +649,10 @@ Implementation and API/accounting contracts: see `docs/hawalas.md`. Manual incom
 - [x] Phase 4 — Organization RBAC
 - [x] Phase 5 — Organization Context
 - [x] Phase 6 — Shop Settings and Financial Foundation
-- [ ] Phase 7 — Customers and Agents
-- [ ] Phase 8 — Currency Exchange and Receipts
-- [ ] Phase 9 — Customer Debts and Payments
-- [ ] Phase 10 — Hawala and Agent Settlements
+- [x] Phase 7 — Customers and Agents
+- [x] Phase 8 — Currency Exchange and Receipts
+- [x] Phase 9 — Customer Debts and Payments
+- [x] Phase 10 — Hawala and Agent Settlements
 - [ ] Phase 11 — Expenses and Daily Closing
 - [ ] Phase 12 — Dashboard and Reports
 - [ ] Phase 13 — Backend Reliability, Deployment, and Acceptance
