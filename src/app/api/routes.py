@@ -55,9 +55,10 @@ def create_app_router() -> APIRouter:
     router.include_router(organizations.router)
     router.include_router(roles.router)
     router.include_router(tenant_resources.router)
-    from app.api.routers import daily
+    from app.api.routers import daily, reports
 
     router.include_router(daily.router)
+    router.include_router(reports.router)
     router.include_router(finance.router)
     router.include_router(exchanges.router)
     router.include_router(exchanges.exchange_router)
