@@ -510,48 +510,50 @@ Implementation and API/accounting contracts: see `docs/hawalas.md`. Manual incom
 
 ## Phase 11 — Expenses and Daily Closing
 
+Implementation and API/accounting contracts: see `docs/daily-operations.md`. Migration `fbf006b5c760` adds retained expense, transfer, business-day and closing records. All ledger workflows enforce the business-day boundary after the shop opens its first day.
+
 ### Expenses and internal transfers
 
-- [ ] Create expense categories and record amount, currency, cashbox, date, payee, and explanation.
-- [ ] Record salary payments as expenses without adding a payroll module.
-- [ ] Attach expense evidence where needed and support authorized linked reversals.
-- [ ] Transfer money between shop cashboxes in the same currency with both sides posted together.
-- [ ] Use a separate exchange when an internal movement changes currency.
+- [x] Create expense categories and record amount, currency, cashbox, date, payee, and explanation.
+- [x] Record salary payments as expenses without adding a payroll module.
+- [x] Attach expense evidence where needed and support authorized linked reversals.
+- [x] Transfer money between shop cashboxes in the same currency with both sides posted together.
+- [x] Use a separate exchange when an internal movement changes currency.
 
 ### Opening and closing the day
 
-- [ ] Open a business day using carried-forward balances without reposting opening entries.
-- [ ] Calculate and return expected cash by cashbox and currency at a defined closing cutoff.
-- [ ] Accept counted cash separately from the calculated expected cash and retain both values.
-- [ ] Calculate and return shortages/overages separately for every currency.
-- [ ] Require a reason and owner approval for discrepancies; use explicit adjustment entries rather than overwriting cash balances.
-- [ ] Persist an immutable closing snapshot and expose its report data/export.
-- [ ] Prevent duplicate closing and block new/backdated postings into closed periods.
-- [ ] Record later corrections as linked entries in an open period with an audit trail.
+- [x] Open a business day using carried-forward balances without reposting opening entries.
+- [x] Calculate and return expected cash by cashbox and currency at a defined closing cutoff.
+- [x] Accept counted cash separately from the calculated expected cash and retain both values.
+- [x] Calculate and return shortages/overages separately for every currency.
+- [x] Require a reason and owner approval for discrepancies; use explicit adjustment entries rather than overwriting cash balances.
+- [x] Persist an immutable closing snapshot and expose its report data/export.
+- [x] Prevent duplicate closing and block new/backdated postings into closed periods.
+- [x] Record later corrections as linked entries in an open period with an audit trail.
 
 ### Endpoints
 
-- [ ] `GET /expense-categories`
-- [ ] `POST /expense-categories`
-- [ ] `PATCH /expense-categories/{id}`
-- [ ] `POST /expenses`
-- [ ] `GET /expenses`
-- [ ] `POST /expenses/{id}/reverse`
-- [ ] `POST /cash-transfers`
-- [ ] `GET /cash-transfers`
-- [ ] `POST /cash-transfers/{id}/reverse`
-- [ ] `POST /business-days/open`
-- [ ] `GET /business-days/current`
-- [ ] `POST /day-closings`
-- [ ] `GET /day-closings`
-- [ ] `GET /day-closings/{id}`
-- [ ] `POST /day-closings/{id}/confirm`
+- [x] `GET /expense-categories`
+- [x] `POST /expense-categories`
+- [x] `PATCH /expense-categories/{id}`
+- [x] `POST /expenses`
+- [x] `GET /expenses`
+- [x] `POST /expenses/{id}/reverse`
+- [x] `POST /cash-transfers`
+- [x] `GET /cash-transfers`
+- [x] `POST /cash-transfers/{id}/reverse`
+- [x] `POST /business-days/open`
+- [x] `GET /business-days/current`
+- [x] `POST /day-closings`
+- [x] `GET /day-closings`
+- [x] `GET /day-closings/{id}`
+- [x] `POST /day-closings/{id}/confirm`
 
 ### Completion checks
 
-- [ ] The closing-confirmation endpoint rejects unexplained or unapproved counted/expected differences.
-- [ ] A cash transfer changes the two cashbox balances without changing total shop cash or profit.
-- [ ] Closing and opening the next day carry balances forward exactly once.
+- [x] The closing-confirmation endpoint rejects unexplained or unapproved counted/expected differences.
+- [x] A cash transfer changes the two cashbox balances without changing total shop cash or profit.
+- [x] Closing and opening the next day carry balances forward exactly once.
 
 ---
 
