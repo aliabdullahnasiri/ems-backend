@@ -69,3 +69,13 @@ During the pilot:
 ### 7. Later versions
 
 Multiple branches, remote access, disconnected-device synchronization, automatic rate feeds, bank integrations, WhatsApp messages, and SaaS subscriptions.
+
+## Phase 11 — Daily operations
+
+Expenses, same-currency cash transfers, business-day opening and retained closing
+snapshots are implemented in `app.services.daily`, with APIs in
+`app.api.routers.daily` and migration `fbf006b5c760`. See
+`docs/daily-operations.md` for permissions, exact-money contracts and lifecycle.
+After a shop opens its first business day, the shared ledger posting path enforces
+open-period checks. Creating a closing snapshot freezes posting until confirmation
+and a later day's opening; it is immutable and has no edit/cancel endpoint.
