@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-09 14:32+0430\n"
+"POT-Creation-Date: 2026-11-17 11:45+0430\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: src/app/api/dependencies/auth.py:103 src/app/api/dependencies/auth.py:130
 #: src/app/api/routers/auth/two_factor/verification.py:39
-#: src/app/services/organization.py:250
+#: src/app/services/organization.py:262
 msgid "auth:user_not_found"
 msgstr ""
 
@@ -27,9 +27,9 @@ msgstr ""
 msgid "organization:selection_required"
 msgstr ""
 
-#: src/app/api/dependencies/auth.py:233 src/app/services/organization.py:129
-#: src/app/services/organization.py:148 src/app/services/organization.py:165
-#: src/app/services/organization.py:499 src/app/services/role.py:59
+#: src/app/api/dependencies/auth.py:233 src/app/services/organization.py:131
+#: src/app/services/organization.py:150 src/app/services/organization.py:167
+#: src/app/services/organization.py:544 src/app/services/role.py:72
 msgid "organization:not_found"
 msgstr ""
 
@@ -37,7 +37,7 @@ msgstr ""
 msgid "health.ok"
 msgstr ""
 
-#: src/app/api/routers/organizations.py:38
+#: src/app/api/routers/organizations.py:37
 msgid "organization:join_request_queued"
 msgstr ""
 
@@ -55,45 +55,45 @@ msgstr ""
 msgid "auth:password_change_successful"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:62
+#: src/app/api/routers/auth/sessions.py:64
 msgid "auth:registration_successful"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:144
+#: src/app/api/routers/auth/sessions.py:150
 msgid "auth:two_factor_challenge_created"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:169
+#: src/app/api/routers/auth/sessions.py:175
 msgid "auth:authentication_successful"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:205
+#: src/app/api/routers/auth/sessions.py:211
 msgid "auth:logout_successful"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:227
+#: src/app/api/routers/auth/sessions.py:233
 #: src/app/core/exceptions/authentication.py:31
 msgid "auth:invalid_refresh_token"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:234
+#: src/app/api/routers/auth/sessions.py:240
 #: src/app/core/exceptions/authentication.py:17
 msgid "auth:invalid_token"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:242
+#: src/app/api/routers/auth/sessions.py:248
 msgid "auth:access_token_refreshed"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:267
+#: src/app/api/routers/auth/sessions.py:273
 msgid "auth:sessions_listed_successfully"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:292
+#: src/app/api/routers/auth/sessions.py:298
 msgid "auth:session_revoked_successfully"
 msgstr ""
 
-#: src/app/api/routers/auth/sessions.py:314
+#: src/app/api/routers/auth/sessions.py:320
 msgid "auth:all_sessions_revoked_successfully"
 msgstr ""
 
@@ -156,7 +156,7 @@ msgid "validation:scoped_orm_required"
 msgstr ""
 
 #: src/app/core/context/organization.py:45
-#: src/app/core/context/organization.py:81
+#: src/app/core/context/organization.py:83
 msgid "validation:immutable_ownership"
 msgstr ""
 
@@ -164,7 +164,7 @@ msgstr ""
 msgid "validation:scoped_bulk_update_required"
 msgstr ""
 
-#: src/app/core/context/organization.py:114
+#: src/app/core/context/organization.py:116
 msgid "validation:posting_commit_forbidden"
 msgstr ""
 
@@ -415,48 +415,48 @@ msgstr ""
 msgid "emails:organization_join_request_text"
 msgstr ""
 
-#: src/app/services/organization.py:95 src/app/services/organization.py:187
+#: src/app/services/organization.py:95 src/app/services/organization.py:196
 msgid "organization:slug_already_exists"
 msgstr ""
 
-#: src/app/services/organization.py:201 src/app/services/organization.py:329
-#: src/app/services/organization.py:537
+#: src/app/services/organization.py:210 src/app/services/organization.py:342
+#: src/app/services/organization.py:590 src/app/services/organization.py:627
 msgid "organization:membership_not_found"
 msgstr ""
 
-#: src/app/services/organization.py:294 src/app/services/organization.py:569
+#: src/app/services/organization.py:307 src/app/services/organization.py:629
 msgid "organization:owner_membership_required"
 msgstr ""
 
-#: src/app/services/organization.py:374
+#: src/app/services/organization.py:404
 msgid "branch:not_found"
 msgstr ""
 
-#: src/app/services/organization.py:441
+#: src/app/services/organization.py:477
 msgid "organization:conflict"
 msgstr ""
 
-#: src/app/services/role.py:48 src/app/services/role.py:232
+#: src/app/services/role.py:61 src/app/services/role.py:271
 msgid "role:not_found"
 msgstr ""
 
-#: src/app/services/role.py:64
+#: src/app/services/role.py:77
 msgid "role:system_protected"
 msgstr ""
 
-#: src/app/services/role.py:73 src/app/services/role.py:85
+#: src/app/services/role.py:86 src/app/services/role.py:98
 msgid "role:conflict"
 msgstr ""
 
-#: src/app/services/role.py:169
+#: src/app/services/role.py:204
 msgid "permission:unknown"
 msgstr ""
 
-#: src/app/services/role.py:218
+#: src/app/services/role.py:257
 msgid "role:inactive_member"
 msgstr ""
 
-#: src/app/services/tenant_operations.py:182
+#: src/app/services/tenant_operations.py:183
 msgid "validation:retry_payload_conflict"
 msgstr ""
 
@@ -464,7 +464,7 @@ msgstr ""
 msgid "errors:invalid_email_verification_token"
 msgstr ""
 
-#: src/app/services/user.py:232
+#: src/app/services/user.py:226
 msgid "organization:transfer_before_user_delete"
 msgstr ""
 
@@ -484,35 +484,38 @@ msgstr ""
 msgid "emails:password_reset_success_subject"
 msgstr ""
 
-#: src/app/services/auth/service.py:88
+#: src/app/services/auth/service.py:89 src/app/services/auth/service.py:92
 msgid "auth:invalid_credentials"
 msgstr ""
 
-#: src/app/services/auth/service.py:140
+#: src/app/services/auth/service.py:144
+#: src/app/templates/emails/auth/welcome.html:3
 msgid "emails:welcome_subject"
 msgstr ""
 
-#: src/app/services/auth/service.py:141
+#: src/app/services/auth/service.py:145
 msgid "emails:welcome_text"
 msgstr ""
 
-#: src/app/services/auth/service.py:168
+#: src/app/services/auth/service.py:172
 msgid "auth:invalid_current_password"
 msgstr ""
 
-#: src/app/services/auth/two_factor/otp.py:56
+#: src/app/services/auth/two_factor/otp.py:59
 msgid "auth:otp_sent_successfully"
 msgstr ""
 
-#: src/app/services/auth/two_factor/otp.py:66
+#: src/app/services/auth/two_factor/otp.py:69
 msgid "emails:otp_verify_subject"
 msgstr ""
 
-#: src/app/services/auth/two_factor/otp.py:67
+#: src/app/services/auth/two_factor/otp.py:70
 msgid "emails:otp_verify_text"
 msgstr ""
 
+#: src/app/templates/emails/auth/welcome.html:37
 #: src/app/templates/emails/base.html:7 src/app/templates/emails/base.html:52
+#: src/app/templates/emails/base.html:79
 msgid "brand:name"
 msgstr ""
 
@@ -626,6 +629,7 @@ msgid "auth:verify_your_email"
 msgstr ""
 
 #: src/app/templates/emails/auth/verify_email.html:25
+#: src/app/templates/emails/auth/welcome.html:25
 msgid "auth:thank_you_for_creating_account"
 msgstr ""
 
