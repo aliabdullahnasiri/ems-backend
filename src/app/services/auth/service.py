@@ -1,8 +1,9 @@
 from uuid import UUID
 
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import AuthenticationError
+from app.core.exceptions import AuthenticationError, UserNotFound
 from app.core.i18n.types import T
 from app.models import User
 from app.schemas.auth import RegisterRequest
@@ -79,10 +80,13 @@ class AuthService:
         Raises:
             AuthenticationError: If the user is not found or the password is invalid.
         """
-        user = await UserService.get_by_email(
-            db=db,
-            email=email,
-        )
+        try:
+            user = await UserService.get_by_email(
+                db=db,
+                email=email,
+            )
+        except NoResultFound, UserNotFound:
+            raise AuthenticationError(T("auth:invalid_credentials")) from None
 
         if user is None or not user.is_active or not user.check_password(password):
             raise AuthenticationError(T("auth:invalid_credentials"))
