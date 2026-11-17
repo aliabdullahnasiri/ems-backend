@@ -930,11 +930,11 @@ async def test_concurrent_hawala_payouts_and_cancellation_are_serialized(
             assert balances[0].amount == (
                 "1600.00"
                 if race == "settlement"
-                else "400.00"
-                if race == "refund"
-                else "0.00"
-                if status.state == "paid"
-                else "1000.00"
+                else (
+                    "400.00"
+                    if race == "refund"
+                    else "0.00" if status.state == "paid" else "1000.00"
+                )
             )
             if race == "settlement":
                 due = await AgentSettlementService.outstanding(db, context, agent.uuid)
