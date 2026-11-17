@@ -62,3 +62,27 @@ async def test_login(client: AsyncClient, mock_mail):
     assert "refresh_token" in response.json()["data"]
 
     return response.json()["data"]
+
+
+@pytest.mark.asyncio
+async def test_login_unknown_email_returns_invalid_credentials(client):
+    response = await client.post(
+        "/api/v1/auth/login",
+        json={"email": "missing@example.com", "password": "password123"},
+    )
+    assert response.status_code == 401, response.text
+    assert response.json()["type"] == "authentication_error"
+
+
+@pytest.mark.asyncio
+async def test_login_unknown_email_matches_wrong_password(client, test_user):
+    unknown = await client.post(
+        "/api/v1/auth/login",
+        json={"email": "missing@example.com", "password": "wrong-password"},
+    )
+    wrong = await client.post(
+        "/api/v1/auth/login",
+        json={"email": test_user["email"], "password": "wrong-password"},
+    )
+    assert unknown.status_code == wrong.status_code == 401
+    assert unknown.json() == wrong.json()
