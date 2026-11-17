@@ -2,6 +2,7 @@ import logging
 from uuid import UUID
 
 from fastapi import Request, status
+from sqlalchemy.exc import NoResultFound
 
 from app.api.dependencies.auth import (
     CurrentActiveSession,
@@ -12,7 +13,7 @@ from app.api.dependencies.db import DBSession
 from app.api.dependencies.redis import RedisClient
 from app.api.router import Router
 from app.core.config import settings
-from app.core.exceptions import AuthenticationError, RateLimitError
+from app.core.exceptions import AuthenticationError, RateLimitError, UserNotFound
 from app.core.i18n.types import T
 from app.schemas.auth import (
     LoginData,
@@ -31,6 +32,7 @@ from app.services.auth import AuthService, JWTService
 from app.services.auth.rate_limit import AuthRateLimiter
 from app.services.auth.security import SecurityService
 from app.services.auth.session import SessionService
+from app.services.auth.two_factor import TwoFactorService
 from app.services.auth.two_factor.challenge import TwoFactorChallengeService
 from app.services.user import UserService
 
@@ -118,6 +120,9 @@ async def login(
                         user_agent=user_agent,
                         attempts=attempts,
                     )
+        except NoResultFound, UserNotFound:
+            # Unknown accounts still count toward the IP failure limit.
+            pass
         except Exception:
             logger.exception("Unable to record failed-login account limits")
 
@@ -136,6 +141,7 @@ async def login(
     )
 
     if user.two_factor_enabled:
+        await TwoFactorService.send_login_code(db, user)
         challenge_token = await TwoFactorChallengeService.create(
             redis=redis,
             user_id=str(user.uuid),
