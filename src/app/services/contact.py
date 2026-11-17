@@ -72,9 +72,11 @@ class ContactService:
             **values,
             normalized_phone=ContactService.phone(data.phone),
             search_name=ContactService.normalize(data.name),
-            identification_encrypted=SecretEncryption.encrypt(data.identification)
-            if data.identification
-            else None,
+            identification_encrypted=(
+                SecretEncryption.encrypt(data.identification)
+                if data.identification
+                else None
+            ),
         )
         db.add(contact)
         await db.flush()
