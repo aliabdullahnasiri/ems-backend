@@ -1,6 +1,6 @@
-# EMS Backend (Exchange Management System)
+# SarafiMS Backend (Exchange Management System)
 
-The asynchronous REST API for the Exchange Management System (EMS). This repository provides the core infrastructure for account management, security, and organizational structure: authentication, user profiles, device sessions, email verification, password recovery, two-factor authentication, organization membership, and organization-scoped permissions.
+The asynchronous REST API for SarafiMS, an exchange management system. This repository provides the core infrastructure for account management, security, and organizational structure: authentication, user profiles, device sessions, email verification, password recovery, two-factor authentication, organization membership, and organization-scoped permissions.
 
 Medicine catalogs, inventory, purchases, sales, invoicing, and supplier workflows are not implemented in the current API.
 
