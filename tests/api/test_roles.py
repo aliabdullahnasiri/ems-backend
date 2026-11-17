@@ -31,12 +31,12 @@ async def test_role_and_permission_lifecycle(client, identity, db_session):
     assert response.status_code == 200, response.text
     catalog = {p["name"] for p in response.json()["data"]}
     assert {
-        "medicine:create",
-        "medicine:read",
-        "supplier:delete",
-        "purchase:cancel",
-        "invoice:cancel",
-        "customer:update",
+        "exchange:create",
+        "exchange:read",
+        "contact:manage",
+        "hawala:cancel",
+        "payment:reverse",
+        "settings:update",
     } <= catalog
     role = await role_create(client, path)
     role_path = path + f"/roles/{role['uuid']}"
@@ -50,12 +50,12 @@ async def test_role_and_permission_lifecycle(client, identity, db_session):
 
     response = await client.put(
         role_path + "/permissions",
-        json={"permissions": ["medicine:read", "medicine:create", "medicine:read"]},
+        json={"permissions": ["exchange:read", "exchange:create", "exchange:read"]},
     )
     assert response.status_code == 200, response.text
     assert [p["name"] for p in response.json()["data"]] == [
-        "medicine:create",
-        "medicine:read",
+        "exchange:create",
+        "exchange:read",
     ]
     assert (await client.get(role_path + "/permissions")).json() == response.json()
     response = await client.patch(
@@ -152,13 +152,13 @@ async def test_unknown_permissions_do_not_replace_existing_grants(client, identi
     await client.get(path + "/permissions")
     role = await role_create(client, path)
     permission_path = path + f"/roles/{role['uuid']}/permissions"
-    await client.put(permission_path, json={"permissions": ["medicine:read"]})
+    await client.put(permission_path, json={"permissions": ["exchange:read"]})
     response = await client.put(
         permission_path, json={"permissions": ["invented:permission"]}
     )
     assert response.status_code == 422, response.text
     assert [p["name"] for p in (await client.get(permission_path)).json()["data"]] == [
-        "medicine:read"
+        "exchange:read"
     ]
 
 
@@ -197,7 +197,7 @@ async def test_invalid_update_and_permission_requests(client, identity):
         {},
         {"permissions": None},
         {"permissions": [""]},
-        {"permissions": "medicine:read"},
+        {"permissions": "exchange:read"},
     ):
         assert (
             await client.put(role_path + "/permissions", json=body)
@@ -276,7 +276,7 @@ async def test_delegate_cannot_escalate_permissions_or_assign_privileged_role(
     )
     await client.put(
         path + f"/roles/{powerful['uuid']}/permissions",
-        json={"permissions": ["medicine:delete"]},
+        json={"permissions": ["exchange:reverse"]},
     )
     member = (await client.get(path + "/members")).json()["data"][0]
     member_path = path + f"/members/{member['uuid']}/roles"
@@ -287,7 +287,7 @@ async def test_delegate_cannot_escalate_permissions_or_assign_privileged_role(
     assert (await client.get(path + "/roles")).status_code == 200
     response = await client.put(
         path + f"/roles/{admin['uuid']}/permissions",
-        json={"permissions": admin_permissions + ["medicine:delete"]},
+        json={"permissions": admin_permissions + ["exchange:reverse"]},
     )
     assert response.status_code == 403, response.text
     assert (
