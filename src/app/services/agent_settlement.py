@@ -261,9 +261,11 @@ class AgentSettlementService:
                     currency.id,
                     amount * sign,
                     cost * sign,
-                    "cash"
-                    if data.method == "cash"
-                    else f"agent_external:{data.method}",
+                    (
+                        "cash"
+                        if data.method == "cash"
+                        else f"agent_external:{data.method}"
+                    ),
                     "cash" if data.method == "cash" else "clearing",
                     data.cashbox_id,
                 )
