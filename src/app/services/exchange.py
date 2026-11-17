@@ -60,9 +60,11 @@ class ExchangeService:
         return RateData.model_validate(
             {
                 **rate.to_dict(),
-                "created_at": rate.created_at.replace(tzinfo=UTC)
-                if rate.created_at.tzinfo is None
-                else rate.created_at,
+                "created_at": (
+                    rate.created_at.replace(tzinfo=UTC)
+                    if rate.created_at.tzinfo is None
+                    else rate.created_at
+                ),
                 "base_currency": base.code,
                 "quote_currency": quote.code,
             }
@@ -262,9 +264,9 @@ class ExchangeService:
                 outgoing_amount=exact(paid, outgoing.precision),
                 unrounded_quote_amount=format(raw, "f"),
                 rounding_adjustment=format(quoted - raw, "f"),
-                incoming_afn_rate=exact(valuation, 8)
-                if valuation is not None
-                else None,
+                incoming_afn_rate=(
+                    exact(valuation, 8) if valuation is not None else None
+                ),
                 incoming_book_afn=exact(incoming_cost, 2),
                 outgoing_book_afn=exact(payout_cost, 2),
                 profit_afn=exact(incoming_cost - payout_cost, 2),
@@ -273,15 +275,19 @@ class ExchangeService:
                 incoming_unpaid_amount=exact(received - cash_in, incoming.precision),
                 outgoing_unpaid_amount=exact(paid - cash_out, outgoing.precision),
                 incoming_cash_book_afn=exact(
-                    incoming_cost
-                    if cash_in == received
-                    else incoming_cost * cash_in / received,
+                    (
+                        incoming_cost
+                        if cash_in == received
+                        else incoming_cost * cash_in / received
+                    ),
                     2,
                 ),
                 outgoing_cash_book_afn=exact(cash_cost, 2),
-                outgoing_afn_rate=exact(outgoing_valuation, 8)
-                if outgoing_valuation is not None
-                else None,
+                outgoing_afn_rate=(
+                    exact(outgoing_valuation, 8)
+                    if outgoing_valuation is not None
+                    else None
+                ),
             )
 
     @staticmethod
@@ -436,9 +442,9 @@ class ExchangeService:
                     address=shop.address,
                     phone=settings.phone if settings else None,
                     logo_reference=settings.logo_reference if settings else None,
-                    preferred_language=settings.preferred_language
-                    if settings
-                    else "fa",
+                    preferred_language=(
+                        settings.preferred_language if settings else "fa"
+                    ),
                     receipt_footer=settings.receipt_footer if settings else None,
                 ),
                 cashier_id=context.user_id,
