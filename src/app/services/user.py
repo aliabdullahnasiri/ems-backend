@@ -169,10 +169,7 @@ class UserService:
         if user is None:
             raise UserNotFound(message=T("errors:invalid_email_verification_token"))
 
-        if (
-            user.email_verification_expires_at is None
-            or user.email_verification_expires_at < DateTimeService.utc_now()
-        ):
+        if DateTimeService.is_expired(user.email_verification_expires_at):
             raise EmailVerificationTokenExpiredError()
 
         return user
@@ -191,10 +188,7 @@ class UserService:
         if user is None:
             raise InvalidPasswordResetTokenError()
 
-        if (
-            user.password_reset_expires_at is None
-            or user.password_reset_expires_at < DateTimeService.utc_now()
-        ):
+        if DateTimeService.is_expired(user.password_reset_expires_at):
             raise PasswordResetTokenExpiredError()
 
         return user
