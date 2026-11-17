@@ -1,8 +1,8 @@
 import pytest
-from app.models.finance import Currency
 from sqlalchemy import select
 
 from app.models import Role
+from app.models.finance import Currency
 from app.services.organization import OrganizationService
 from app.services.role import RoleService
 from tests.api.test_organizations import create
