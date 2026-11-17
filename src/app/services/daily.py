@@ -398,9 +398,11 @@ class ClosingService:
             id=row.id,
             uuid=row.uuid,
             business_day_id=row.business_day_id,
-            cutoff=row.cutoff.replace(tzinfo=UTC)
-            if row.cutoff.tzinfo is None
-            else row.cutoff,
+            cutoff=(
+                row.cutoff.replace(tzinfo=UTC)
+                if row.cutoff.tzinfo is None
+                else row.cutoff
+            ),
             counts=row.counts,
             reason=row.reason,
             confirmed=confirmation is not None,
