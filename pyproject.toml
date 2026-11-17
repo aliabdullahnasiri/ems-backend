@@ -1,7 +1,7 @@
 [project]
 name = "app"
 version = "0.1.0"
-description = "Backend API for the DawaMIS pharmacy management system."
+description = "Backend API for the SarafiMS exchange management system."
 readme = "README.md"
 authors = [
     { name = "aliabdullahnasiri", email = "nasiri.aliabdullah@gmail.com" }
