@@ -127,14 +127,21 @@ async def upload_file(
     from app.services.contact import ContactService
 
     if contact_uuid is not None:
-        await TenantOperations.authorize(db, context, "contact:manage", "settings:update")
+        await TenantOperations.authorize(
+            db, context, "contact:manage", "settings:update"
+        )
         contact = await ContactService.get(db, context, contact_uuid)
         shop = await context.shop(db, shop_uuid)
         await context.reference(db, type(contact), contact.id, shop_id=shop.id)
     content = await file.read(5 * 1024 * 1024 + 1)
     async with db.begin_nested():
         attachment = await TenantOperations.upload(
-            db, context, shop_uuid, file.filename or "", file.content_type or "", content
+            db,
+            context,
+            shop_uuid,
+            file.filename or "",
+            file.content_type or "",
+            content,
         )
         if contact_uuid is not None:
             await ContactService.link_attachment(db, context, contact_uuid, attachment)
