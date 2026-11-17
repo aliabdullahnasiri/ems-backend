@@ -137,7 +137,7 @@ async def get_current_organization(
     """Resolve session context and revalidate tenant access on every request."""
     if session.organization_id is None:
         raise AuthorizationError(message=T("organization:selection_required"))
-    organization = await OrganizationService.get_by_id(db, session.organization_id)
+    organization = await OrganizationService._get_by_id(db, session.organization_id)
     await OrganizationService.validate_membership(db, session.user, organization)
     if not organization.is_active:
         raise AuthorizationError()

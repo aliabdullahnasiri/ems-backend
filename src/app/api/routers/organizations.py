@@ -4,7 +4,6 @@ from fastapi import APIRouter, Query, status
 
 from app.api.dependencies.auth import CurrentActiveSession, PermissionRequired
 from app.api.dependencies.db import DBSession
-from app.core.exceptions import AuthorizationError
 from app.core.i18n.types import T
 from app.schemas.base.response import BaseResponseModel
 from app.schemas.organization.data.organization import MembershipData, OrganizationData
@@ -69,12 +68,15 @@ async def list_organizations(
 
 @router.get("/{organization_uuid}", response_model=OrganizationResponse)
 async def get_organization(
+    session: CurrentActiveSession,
     organization_uuid: UUID,
     db: DBSession,
     _: PermissionRequired["organizations.read"],  # noqa: F821, UP037
 ) -> OrganizationResponse:
     """Retrieve an organization accessible to the current user."""
-    organization = await OrganizationService.get_by_uuid(db, organization_uuid)
+    organization = await OrganizationService.get_by_uuid(
+        db, organization_uuid, actor_id=session.user_id
+    )
     return OrganizationResponse(data=OrganizationData.model_validate(organization))
 
 
@@ -87,11 +89,12 @@ async def update_organization(
     _: PermissionRequired["organizations.update"],  # noqa: F821, UP037
 ) -> OrganizationResponse:
     """Update organization settings, status, or transfer ownership."""
-    organization = await OrganizationService.get_by_uuid(db, organization_uuid)
-    if request.owner_id is not None and organization.owner_id != session.user_id:
-        raise AuthorizationError()
+    organization = await OrganizationService._get_by_uuid(db, organization_uuid)
     organization = await OrganizationService.update(
-        db, organization, **request.model_dump(exclude_unset=True)
+        db,
+        organization,
+        **request.model_dump(exclude_unset=True),
+        actor_id=session.user_id,
     )
     return OrganizationResponse(data=OrganizationData.model_validate(organization))
 
@@ -104,12 +107,13 @@ async def delete_organization(
     _: PermissionRequired["organizations.delete"],  # noqa: F821, UP037
 ) -> None:
     """Delete an organization and clear its selected session contexts."""
-    organization = await OrganizationService.get_by_uuid(db, organization_uuid)
-    await OrganizationService.delete(db, organization)
+    organization = await OrganizationService._get_by_uuid(db, organization_uuid)
+    await OrganizationService.delete(db, organization, actor_id=session.user_id)
 
 
 @router.get("/{organization_uuid}/members", response_model=MembershipsResponse)
 async def list_members(
+    session: CurrentActiveSession,
     organization_uuid: UUID,
     db: DBSession,
     _: PermissionRequired["organizations.members.read"],  # noqa: F821, UP037
@@ -117,8 +121,10 @@ async def list_members(
     limit: int = Query(50, ge=1, le=100),
 ) -> MembershipsResponse:
     """List memberships within an accessible organization."""
-    organization = await OrganizationService.get_by_uuid(db, organization_uuid)
-    members = await OrganizationService.members(db, organization.id, offset, limit)
+    organization = await OrganizationService._get_by_uuid(db, organization_uuid)
+    members = await OrganizationService.members(
+        db, organization.id, offset, limit, actor_id=session.user_id
+    )
     return MembershipsResponse(
         data=[MembershipData.model_validate(member) for member in members]
     )
@@ -137,8 +143,10 @@ async def add_member(
     _: PermissionRequired["organizations.members.manage"],  # noqa: F821, UP037
 ) -> MembershipResponse:
     """Add an existing user to this organization."""
-    organization = await OrganizationService.get_by_uuid(db, organization_uuid)
-    member = await OrganizationService.add_member(db, organization.id, request.user_id)
+    organization = await OrganizationService._get_by_uuid(db, organization_uuid)
+    member = await OrganizationService.add_member(
+        db, organization.id, request.user_id, actor_id=session.user_id
+    )
     return MembershipResponse(data=MembershipData.model_validate(member))
 
 
@@ -154,12 +162,12 @@ async def update_member(
     _: PermissionRequired["organizations.members.manage"],  # noqa: F821, UP037
 ) -> MembershipResponse:
     """Activate or deactivate a membership, identified by its membership UUID."""
-    organization = await OrganizationService.get_by_uuid(db, organization_uuid)
-    member = await OrganizationService.get_member_by_uuid(
+    organization = await OrganizationService._get_by_uuid(db, organization_uuid)
+    member = await OrganizationService._get_member_by_uuid(
         db, organization.id, member_uuid
     )
     member = await OrganizationService.update_member(
-        db, organization, member, request.is_active
+        db, organization, member, request.is_active, actor_id=session.user_id
     )
     return MembershipResponse(data=MembershipData.model_validate(member))
 
@@ -175,8 +183,10 @@ async def remove_member(
     _: PermissionRequired["organizations.members.manage"],  # noqa: F821, UP037
 ) -> None:
     """Remove a membership and its organization-specific role grants."""
-    organization = await OrganizationService.get_by_uuid(db, organization_uuid)
-    member = await OrganizationService.get_member_by_uuid(
+    organization = await OrganizationService._get_by_uuid(db, organization_uuid)
+    member = await OrganizationService._get_member_by_uuid(
         db, organization.id, member_uuid
     )
-    await OrganizationService.remove_member(db, organization.id, member.user_id)
+    await OrganizationService.remove_member(
+        db, organization.id, member.user_id, actor_id=session.user_id
+    )

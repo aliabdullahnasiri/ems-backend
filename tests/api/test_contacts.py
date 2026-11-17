@@ -144,7 +144,9 @@ async def test_cashier_identity_and_financial_permissions(client, identity, db_s
     )
     assert res.status_code == 201, res.text
     file_uuid = res.json()["data"]["uuid"]
-    organization = await OrganizationService.get_by_id(db_session, org["id"])
+    organization = await OrganizationService.get_by_id(
+        db_session, org["id"], actor_id=identity[0].id
+    )
     member = await OrganizationService.validate_membership(
         db_session, user, organization
     )

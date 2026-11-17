@@ -23,8 +23,14 @@ from app.services.permission import PermissionService
 class RoleService:
     @staticmethod
     async def list(
-        db: AsyncSession, organization_id: int, offset: int = 0, limit: int = 50
+        db: AsyncSession,
+        organization_id: int,
+        offset: int = 0,
+        limit: int = 50,
+        *,
+        actor_id: int,
     ) -> list[Role]:
+        await OrganizationService.authorize(db, organization_id, actor_id, "roles:read")
         return list(
             (
                 await db.scalars(
@@ -38,7 +44,14 @@ class RoleService:
         )
 
     @staticmethod
-    async def get(db: AsyncSession, organization_id: int, role_uuid: UUID) -> Role:
+    async def get(
+        db: AsyncSession, organization_id: int, role_uuid: UUID, *, actor_id: int
+    ) -> Role:
+        await OrganizationService.authorize(db, organization_id, actor_id, "roles:read")
+        return await RoleService._get(db, organization_id, role_uuid)
+
+    @staticmethod
+    async def _get(db: AsyncSession, organization_id: int, role_uuid: UUID) -> Role:
         role = await db.scalar(
             select(Role)
             .where(Role.organization_id == organization_id, Role.uuid == role_uuid)
@@ -90,7 +103,12 @@ class RoleService:
         organization_id: int,
         name: str,
         description: str | None = None,
+        *,
+        actor_id: int,
     ) -> Role:
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "roles:create"
+        )
         await RoleService.lock(db, organization_id)
         await RoleService.check_name(db, organization_id, name)
         role = Role(
@@ -106,10 +124,18 @@ class RoleService:
 
     @staticmethod
     async def update(
-        db: AsyncSession, organization_id: int, role_uuid: UUID, changes: dict
+        db: AsyncSession,
+        organization_id: int,
+        role_uuid: UUID,
+        changes: dict,
+        *,
+        actor_id: int,
     ) -> Role:
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "roles:update"
+        )
         await RoleService.lock(db, organization_id)
-        role = await RoleService.get(db, organization_id, role_uuid)
+        role = await RoleService._get(db, organization_id, role_uuid)
         RoleService.require_mutable(role)
         if "name" in changes:
             await RoleService.check_name(db, organization_id, changes["name"], role.id)
@@ -121,18 +147,24 @@ class RoleService:
         return role
 
     @staticmethod
-    async def delete(db: AsyncSession, organization_id: int, role_uuid: UUID) -> None:
+    async def delete(
+        db: AsyncSession, organization_id: int, role_uuid: UUID, *, actor_id: int
+    ) -> None:
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "roles:delete"
+        )
         await RoleService.lock(db, organization_id)
-        role = await RoleService.get(db, organization_id, role_uuid)
+        role = await RoleService._get(db, organization_id, role_uuid)
         RoleService.require_mutable(role)
         await db.delete(role)
         await RoleService.commit(db, organization_id)
 
     @staticmethod
     async def permissions(
-        db: AsyncSession, organization_id: int, role_uuid: UUID
+        db: AsyncSession, organization_id: int, role_uuid: UUID, *, actor_id: int
     ) -> list[Permission]:
-        role = await RoleService.get(db, organization_id, role_uuid)
+        await OrganizationService.authorize(db, organization_id, actor_id, "roles:read")
+        role = await RoleService._get(db, organization_id, role_uuid)
         return list(
             (
                 await db.scalars(
@@ -153,8 +185,11 @@ class RoleService:
         actor_id: int,
     ) -> list[Permission]:
         """Replace atomically; a delegate cannot grant permissions they do not hold."""
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "roles:permissions:update"
+        )
         await RoleService.lock(db, organization_id)
-        role = await RoleService.get(db, organization_id, role_uuid)
+        role = await RoleService._get(db, organization_id, role_uuid)
         RoleService.require_mutable(role)
         permissions = list(
             (
@@ -181,9 +216,10 @@ class RoleService:
 
     @staticmethod
     async def member_roles(
-        db: AsyncSession, organization_id: int, member_uuid: UUID
+        db: AsyncSession, organization_id: int, member_uuid: UUID, *, actor_id: int
     ) -> list[Role]:
-        member = await OrganizationService.get_member_by_uuid(
+        await OrganizationService.authorize(db, organization_id, actor_id, "roles:read")
+        member = await OrganizationService._get_member_by_uuid(
             db, organization_id, member_uuid
         )
         return list(
@@ -210,8 +246,11 @@ class RoleService:
         actor_id: int,
     ) -> list[Role]:
         """Replace a member's roles, rejecting foreign roles and inactive memberships."""
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "roles:assign"
+        )
         await RoleService.lock(db, organization_id)
-        member: OrganizationUser = await OrganizationService.get_member_by_uuid(
+        member: OrganizationUser = await OrganizationService._get_member_by_uuid(
             db, organization_id, member_uuid
         )
         if not member.is_active:

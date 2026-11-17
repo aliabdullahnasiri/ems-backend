@@ -151,7 +151,9 @@ async def test_jobs_cache_download_and_reports_revalidate(
         )
         == "ok"
     )
-    member = await OrganizationService.add_member(db_session, a.id, staff.id)
+    member = await OrganizationService.add_member(
+        db_session, a.id, staff.id, actor_id=a.owner_id
+    )
     cs = await OrganizationContext.resolve(db_session, staff.id, a.id)
     with pytest.raises(AuthorizationError):
         await TenantOperations.run_job(
@@ -179,20 +181,24 @@ async def test_jobs_cache_download_and_reports_revalidate(
 @pytest.mark.asyncio
 async def test_audit_and_history_survive_deactivation(db_session, tenants):
     _owner, staff, a, _, _ca, _, sa, _ = tenants
-    member = await OrganizationService.add_member(db_session, a.id, staff.id)
+    member = await OrganizationService.add_member(
+        db_session, a.id, staff.id, actor_id=a.owner_id
+    )
     cs = await OrganizationContext.resolve(db_session, staff.id, a.id)
     event = await TenantOperations.audit(
         db_session, cs, "exchange:create", "shop", sa.id
     )
     await db_session.commit()
     event_id = event.id
-    await OrganizationService.remove_member(db_session, a.id, staff.id)
+    await OrganizationService.remove_member(
+        db_session, a.id, staff.id, actor_id=a.owner_id
+    )
     retained = await db_session.get(OrganizationUser, member.id)
     assert retained is not None and not retained.is_active
     await UserService.delete(db_session, staff)
     assert (await db_session.get(User, staff.id)).is_active is False
     assert (await db_session.get(AuditEvent, event_id)).membership_id == member.id
-    await OrganizationService.delete(db_session, a)
+    await OrganizationService.delete(db_session, a, actor_id=a.owner_id)
     assert not a.is_active
     assert await db_session.get(AuditEvent, event_id) is not None
 
@@ -297,11 +303,17 @@ async def test_concurrent_retries_share_one_committed_result(tmp_path):
 @pytest.mark.asyncio
 async def test_old_job_cannot_reuse_recreated_membership(db_session, tenants):
     _, staff, a, _, _, _, _, _ = tenants
-    await OrganizationService.add_member(db_session, a.id, staff.id)
+    await OrganizationService.add_member(
+        db_session, a.id, staff.id, actor_id=a.owner_id
+    )
     old = await OrganizationContext.resolve(db_session, staff.id, a.id)
     payload = old.job_payload()
-    await OrganizationService.remove_member(db_session, a.id, staff.id)
-    await OrganizationService.add_member(db_session, a.id, staff.id)
+    await OrganizationService.remove_member(
+        db_session, a.id, staff.id, actor_id=a.owner_id
+    )
+    await OrganizationService.add_member(
+        db_session, a.id, staff.id, actor_id=a.owner_id
+    )
     with pytest.raises(AuthorizationError):
         await OrganizationContext.from_job(db_session, payload)
 

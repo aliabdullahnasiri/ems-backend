@@ -160,7 +160,7 @@ async def test_hawala_http_lifecycle_settlement_history_permissions_and_isolatio
     )
     assert response.status_code == 201, response.text
     # Cashier can record manual payout, but cannot confirm/cancel or settle agents.
-    model = await OrganizationService.get_by_id(db_session, org["id"])
+    model = await OrganizationService.get_by_id(db_session, org["id"], actor_id=user.id)
     member = await OrganizationService.validate_membership(db_session, user, model)
     role = await db_session.scalar(
         select(Role).where(Role.organization_id == model.id, Role.name == "cashier")

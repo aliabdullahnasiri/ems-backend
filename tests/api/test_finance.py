@@ -120,7 +120,7 @@ async def test_cashier_cannot_configure_or_approve_opening(
     await select_org(client, org)
     response = await client.post("/api/v1/shops", json={"name": "Shop"})
     shop_id = response.json()["data"]["id"]
-    model = await OrganizationService.get_by_id(db_session, org["id"])
+    model = await OrganizationService.get_by_id(db_session, org["id"], actor_id=user.id)
     member = await OrganizationService.validate_membership(db_session, user, model)
     role = await db_session.scalar(
         select(Role).where(Role.organization_id == model.id, Role.name == "cashier")

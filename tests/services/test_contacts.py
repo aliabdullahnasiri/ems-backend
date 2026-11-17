@@ -105,7 +105,9 @@ async def test_identity_files_restricted_and_retained(db_session, tenants):
     ).content == b"%PDF-secret"
     with pytest.raises(NotFoundError):
         await TenantOperations.download(db_session, cb, attachment.uuid)
-    member = await OrganizationService.add_member(db_session, a.id, staff.id)
+    member = await OrganizationService.add_member(
+        db_session, a.id, staff.id, actor_id=a.owner_id
+    )
     cashier = await db_session.scalar(
         select(Role).where(Role.organization_id == a.id, Role.name == "cashier")
     )

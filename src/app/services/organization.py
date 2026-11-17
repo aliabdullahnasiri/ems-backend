@@ -34,7 +34,7 @@ class OrganizationService:
     ) -> None:
         """Email the owner a membership request without granting any access."""
 
-        organization = await OrganizationService.get_by_uuid(db, organization_uuid)
+        organization = await OrganizationService._get_by_uuid(db, organization_uuid)
 
         if not organization.is_active:
             raise AuthorizationError()
@@ -112,7 +112,7 @@ class OrganizationService:
         return organization
 
     @staticmethod
-    async def get_by_id(
+    async def _get_by_id(
         db: AsyncSession,
         organization_id: int,
     ) -> Organization:
@@ -121,7 +121,9 @@ class OrganizationService:
         """
         organization = (
             await db.execute(
-                select(Organization).where(Organization.id == organization_id)
+                select(Organization)
+                .where(Organization.id == organization_id)
+                .execution_options(populate_existing=True)
             )
         ).scalar_one_or_none()
 
@@ -131,7 +133,7 @@ class OrganizationService:
         return organization
 
     @staticmethod
-    async def get_by_uuid(
+    async def _get_by_uuid(
         db: AsyncSession,
         organization_uuid: UUID,
     ) -> Organization:
@@ -150,7 +152,7 @@ class OrganizationService:
         return organization
 
     @staticmethod
-    async def get_by_slug(
+    async def _get_by_slug(
         db: AsyncSession,
         slug: str,
     ) -> Organization:
@@ -175,10 +177,17 @@ class OrganizationService:
         is_active: bool | None = None,
         settings: dict | None = None,
         owner_id: int | None = None,
+        *,
+        actor_id: int,
     ) -> Organization:
         """
         Update organization details.
         """
+        await OrganizationService.authorize(
+            db, organization.id, actor_id, "organizations.update"
+        )
+        if owner_id is not None and organization.owner_id != actor_id:
+            raise AuthorizationError()
         if slug and slug != organization.slug:
             existing = (
                 await db.execute(select(Organization).where(Organization.slug == slug))
@@ -207,12 +216,14 @@ class OrganizationService:
 
     @staticmethod
     async def delete(
-        db: AsyncSession,
-        organization: Organization,
+        db: AsyncSession, organization: Organization, *, actor_id: int
     ) -> None:
         """
         Delete an organization.
         """
+        await OrganizationService.authorize(
+            db, organization.id, actor_id, "organizations.delete"
+        )
         from app.services.history import HistoryService
 
         if await HistoryService.has_organization_history(db, organization.id):
@@ -238,14 +249,15 @@ class OrganizationService:
 
     @staticmethod
     async def add_member(
-        db: AsyncSession,
-        organization_id: int,
-        user_id: int,
+        db: AsyncSession, organization_id: int, user_id: int, *, actor_id: int
     ) -> OrganizationUser:
         """
         Add a user to an organization.
         """
-        await OrganizationService.get_by_id(db, organization_id)
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "organizations.members.manage"
+        )
+        await OrganizationService._get_by_id(db, organization_id)
         if await db.get(User, user_id) is None:
             raise NotFoundError(message=T("auth:user_not_found"))
         # Check if membership already exists
@@ -272,13 +284,14 @@ class OrganizationService:
 
     @staticmethod
     async def remove_member(
-        db: AsyncSession,
-        organization_id: int,
-        user_id: int,
+        db: AsyncSession, organization_id: int, user_id: int, *, actor_id: int
     ) -> None:
         """
         Remove a user from an organization.
         """
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "organizations.members.manage"
+        )
         membership = (
             await db.execute(
                 select(OrganizationUser).where(
@@ -289,10 +302,10 @@ class OrganizationService:
         ).scalar_one_or_none()
 
         if membership:
-            organization = await OrganizationService.get_by_id(db, organization_id)
+            organization = await OrganizationService._get_by_id(db, organization_id)
             if organization.owner_id == user_id:
                 raise ConflictError(message=T("organization:owner_membership_required"))
-            await OrganizationService.clear_member_access(db, organization_id, user_id)
+            await OrganizationService._clear_member_access(db, organization_id, user_id)
             from app.services.history import HistoryService
 
             if await HistoryService.has_actor_history(db, membership_id=membership.id):
@@ -336,12 +349,17 @@ class OrganizationService:
         organization_id: int,
         name: str,
         address: str | None = None,
+        *,
+        actor_id: int,
     ) -> Branch:
         """
         Create a branch for an organization.
         """
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "settings:update"
+        )
         # Ensure organization exists
-        await OrganizationService.get_by_id(db, organization_id)
+        await OrganizationService._get_by_id(db, organization_id)
 
         branch = Branch(
             organization_id=organization_id,
@@ -355,9 +373,21 @@ class OrganizationService:
 
     @staticmethod
     async def get_branch_by_id(
-        db: AsyncSession,
-        branch_id: int,
-        organization_id: int,
+        db: AsyncSession, branch_id: int, organization_id: int, *, actor_id: int
+    ) -> Branch:
+        """
+        Return a branch by its ID.
+        """
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "settings:read"
+        )
+        return await OrganizationService._get_branch_by_id(
+            db, branch_id, organization_id
+        )
+
+    @staticmethod
+    async def _get_branch_by_id(
+        db: AsyncSession, branch_id: int, organization_id: int
     ) -> Branch:
         """
         Return a branch by its ID.
@@ -383,11 +413,16 @@ class OrganizationService:
         name: str | None = None,
         address: str | None = None,
         is_active: bool | None = None,
+        *,
+        actor_id: int,
     ) -> Branch:
         """
         Update branch details.
         """
-        branch = await OrganizationService.get_branch_by_id(
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "settings:update"
+        )
+        branch = await OrganizationService._get_branch_by_id(
             db, branch.id, organization_id
         )
         if name is not None:
@@ -403,14 +438,15 @@ class OrganizationService:
 
     @staticmethod
     async def delete_branch(
-        db: AsyncSession,
-        branch: Branch,
-        organization_id: int,
+        db: AsyncSession, branch: Branch, organization_id: int, *, actor_id: int
     ) -> None:
         """
         Delete a branch.
         """
-        branch = await OrganizationService.get_branch_by_id(
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "settings:update"
+        )
+        branch = await OrganizationService._get_branch_by_id(
             db, branch.id, organization_id
         )
         from app.models import PrivateAttachment
@@ -470,9 +506,18 @@ class OrganizationService:
         redis: Redis | None = None,
     ) -> None:
         """Allow the organization owner, otherwise require every scoped grant."""
-        organization = await OrganizationService.get_by_id(db, organization_id)
+        organization = await OrganizationService._get_by_id(db, organization_id)
+        user = await db.get(User, user_id, populate_existing=True)
+        if user is None or not user.is_active:
+            raise AuthorizationError()
+        try:
+            await OrganizationService.validate_membership(db, user, organization)
+        except NotFoundError as exc:
+            raise AuthorizationError() from exc
         if organization.owner_id == user_id:
             return
+        if not organization.is_active:
+            raise AuthorizationError()
 
         granted = await PermissionService.granted(db, user_id, organization_id, redis)
         if not set(permissions).issubset(granted):
@@ -505,9 +550,17 @@ class OrganizationService:
 
     @staticmethod
     async def members(
-        db: AsyncSession, organization_id: int, offset: int, limit: int
+        db: AsyncSession,
+        organization_id: int,
+        offset: int,
+        limit: int,
+        *,
+        actor_id: int,
     ) -> list[OrganizationUser]:
         """Return a bounded page of memberships."""
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "organizations.members.read"
+        )
         return list(
             (
                 await db.scalars(
@@ -523,7 +576,7 @@ class OrganizationService:
         )
 
     @staticmethod
-    async def get_member_by_uuid(
+    async def _get_member_by_uuid(
         db: AsyncSession, organization_id: int, member_uuid: UUID
     ) -> OrganizationUser:
         """Look up a membership without crossing tenant boundaries."""
@@ -538,7 +591,7 @@ class OrganizationService:
         return membership
 
     @staticmethod
-    async def clear_member_access(
+    async def _clear_member_access(
         db: AsyncSession, organization_id: int, user_id: int
     ) -> None:
         """Remove role grants and selected contexts when membership is removed."""
@@ -563,8 +616,15 @@ class OrganizationService:
         organization: Organization,
         membership: OrganizationUser,
         is_active: bool,
+        *,
+        actor_id: int,
     ) -> OrganizationUser:
         """Change membership status while protecting the owner."""
+        await OrganizationService.authorize(
+            db, organization.id, actor_id, "organizations.members.manage"
+        )
+        if membership.organization_id != organization.id:
+            raise NotFoundError(message=T("organization:membership_not_found"))
         if not is_active and membership.user_id == organization.owner_id:
             raise ConflictError(message=T("organization:owner_membership_required"))
         membership.is_active = is_active
@@ -580,3 +640,57 @@ class OrganizationService:
         await PermissionService.invalidate(db, organization.id)
         await db.commit()
         return membership
+
+    @staticmethod
+    async def authorize(
+        db: AsyncSession, organization_id: int, actor_id: int, *permissions: str
+    ) -> None:
+        """Authorize an explicit actor; inactive tenants remain manageable by their owner."""
+        from app.services.organization_context import OrganizationContext
+        from app.services.tenant_operations import TenantOperations
+
+        organization = await OrganizationService._get_by_id(db, organization_id)
+        user = await db.get(User, actor_id, populate_existing=True)
+        if user is None or not user.is_active:
+            raise AuthorizationError()
+        member = await OrganizationService.validate_membership(db, user, organization)
+        # Preserve owner access to reactivate/manage an inactive organization.
+        # Business services always use TenantOperations.authorize's strict check.
+        if not organization.is_active and organization.owner_id == actor_id:
+            return
+        context = OrganizationContext(
+            organization.id, member.id, user.id, str(member.uuid)
+        )
+        await TenantOperations.authorize(db, context, *permissions)
+
+    @staticmethod
+    async def get_by_id(
+        db: AsyncSession, organization_id: int, *, actor_id: int
+    ) -> Organization:
+        """Read an organization only with its own read permission."""
+        await OrganizationService.authorize(
+            db, organization_id, actor_id, "organizations.read"
+        )
+        return await OrganizationService._get_by_id(db, organization_id)
+
+    @staticmethod
+    async def get_by_uuid(
+        db: AsyncSession, organization_uuid: UUID, *, actor_id: int
+    ) -> Organization:
+        """Resolve a UUID and enforce organization read access."""
+        organization = await OrganizationService._get_by_uuid(db, organization_uuid)
+        await OrganizationService.authorize(
+            db, organization.id, actor_id, "organizations.read"
+        )
+        return organization
+
+    @staticmethod
+    async def get_by_slug(
+        db: AsyncSession, slug: str, *, actor_id: int
+    ) -> Organization:
+        """Resolve a slug and enforce organization read access."""
+        organization = await OrganizationService._get_by_slug(db, slug)
+        await OrganizationService.authorize(
+            db, organization.id, actor_id, "organizations.read"
+        )
+        return organization

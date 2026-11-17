@@ -125,7 +125,7 @@ async def test_exchange_http_workflow(client, identity, db_session):
     )
     assert response.status_code == 409, response.text
     # A cashier can quote/post/read, but cannot set rates or approve a reversal.
-    model = await OrganizationService.get_by_id(db_session, org["id"])
+    model = await OrganizationService.get_by_id(db_session, org["id"], actor_id=user.id)
     member = await OrganizationService.validate_membership(db_session, user, model)
     role = await db_session.scalar(
         select(Role).where(Role.organization_id == model.id, Role.name == "cashier")

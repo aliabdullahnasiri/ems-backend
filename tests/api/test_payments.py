@@ -146,7 +146,7 @@ async def test_credit_exchange_payment_receipt_outstanding_reversal_and_permissi
     )
     assert response.status_code == 409, response.text
     # Accountants may inspect payments but cannot post or reverse them.
-    model = await OrganizationService.get_by_id(db_session, org["id"])
+    model = await OrganizationService.get_by_id(db_session, org["id"], actor_id=user.id)
     member = await OrganizationService.validate_membership(db_session, user, model)
     role = await db_session.scalar(
         select(Role).where(Role.organization_id == model.id, Role.name == "accountant")

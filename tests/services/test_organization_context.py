@@ -45,14 +45,22 @@ async def test_context_isolates_records_and_revalidates_membership(db_session):
 
 @pytest.mark.asyncio
 async def test_default_roles_are_scoped_and_repeatable(db_session):
-    org = await OrganizationService.create(db_session, "Roles", "ems-defaults")
+    user = User(
+        user_name="roles-owner", email="roles-owner@example.com", password_hash="unused"
+    )
+    db_session.add(user)
+    await db_session.flush()
+    org = await OrganizationService.create(db_session, "Roles", "ems-defaults", user)
     await RoleService.provision_ems_defaults(db_session, org.id)
     await db_session.commit()
-    roles = await RoleService.list(db_session, org.id)
+    roles = await RoleService.list(db_session, org.id, actor_id=org.owner_id)
     assert {r.name for r in roles} == set(EMS_ROLE_PERMISSIONS)
     for role in roles:
         names = {
-            p.name for p in await RoleService.permissions(db_session, org.id, role.uuid)
+            p.name
+            for p in await RoleService.permissions(
+                db_session, org.id, role.uuid, actor_id=org.owner_id
+            )
         }
         assert names == set(EMS_ROLE_PERMISSIONS[role.name])
     for staff in ("cashier", "accountant"):

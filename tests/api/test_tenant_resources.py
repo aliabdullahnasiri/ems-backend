@@ -62,7 +62,9 @@ async def test_guessed_ids_filters_exports_and_downloads_are_isolated(
     assert response.headers["cache-control"] == "no-store"
     # Remove membership in B entirely: a guessed organization cannot be selected.
     member = await OrganizationService.validate_membership(
-        db_session, user, await OrganizationService.get_by_id(db_session, b["id"])
+        db_session,
+        user,
+        await OrganizationService.get_by_id(db_session, b["id"], actor_id=user.id),
     )
     member.is_active = False
     await db_session.commit()
@@ -96,7 +98,9 @@ async def test_private_upload_validation_and_revocation(client, identity, db_ses
     )
     file_id = response.json()["data"]["uuid"]
     member = await OrganizationService.validate_membership(
-        db_session, user, await OrganizationService.get_by_id(db_session, org["id"])
+        db_session,
+        user,
+        await OrganizationService.get_by_id(db_session, org["id"], actor_id=user.id),
     )
     member.is_active = False
     await db_session.commit()
@@ -116,7 +120,9 @@ async def test_switching_changes_effective_role_and_sensitive_access(
     a = await create(client, "cashier-org")
     b = await create(client, "accountant-org")
     for org, role_name in ((a, "cashier"), (b, "accountant")):
-        model = await OrganizationService.get_by_id(db_session, org["id"])
+        model = await OrganizationService.get_by_id(
+            db_session, org["id"], actor_id=user.id
+        )
         member = await OrganizationService.validate_membership(db_session, user, model)
         role = await db_session.scalar(
             select(Role).where(Role.organization_id == model.id, Role.name == role_name)

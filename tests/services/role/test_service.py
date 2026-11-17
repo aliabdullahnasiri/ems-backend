@@ -24,11 +24,15 @@ async def setup_roles(db_session):
     db_session.add_all([owner, member])
     await db_session.flush()
     org = await OrganizationService.create(db_session, "Pharmacy", "pharmacy", owner)
-    membership = await OrganizationService.add_member(db_session, org.id, member.id)
+    membership = await OrganizationService.add_member(
+        db_session, org.id, member.id, actor_id=org.owner_id
+    )
     await PermissionService.list_definitions(db_session)
-    role = await RoleService.create(db_session, org.id, "Staff", "Description")
+    role = await RoleService.create(
+        db_session, org.id, "Staff", "Description", actor_id=org.owner_id
+    )
     await RoleService.set_permissions(
-        db_session, org.id, role.uuid, ["medicine:read"], owner.id
+        db_session, org.id, role.uuid, ["exchange:read"], owner.id
     )
     await RoleService.set_member_roles(
         db_session, org.id, membership.uuid, [role.uuid], owner.id
@@ -39,25 +43,39 @@ async def setup_roles(db_session):
 @pytest.mark.asyncio
 async def test_service_lifecycle_and_conflicts(db_session, setup_roles):
     owner, _, org, membership, role = setup_roles
-    assert (await RoleService.get(db_session, org.id, role.uuid)).name == "Staff"
-    assert role in await RoleService.list(db_session, org.id)
+    assert (
+        await RoleService.get(db_session, org.id, role.uuid, actor_id=org.owner_id)
+    ).name == "Staff"
+    assert role in await RoleService.list(db_session, org.id, actor_id=org.owner_id)
     with pytest.raises(ConflictError):
-        await RoleService.create(db_session, org.id, "Staff")
+        await RoleService.create(db_session, org.id, "Staff", actor_id=org.owner_id)
     with pytest.raises(NotFoundError):
-        await RoleService.get(db_session, org.id, uuid4())
+        await RoleService.get(db_session, org.id, uuid4(), actor_id=org.owner_id)
     with pytest.raises(AppValidationError):
         await RoleService.set_permissions(
             db_session, org.id, role.uuid, ["unknown"], owner.id
         )
     assert [
-        p.name for p in await RoleService.permissions(db_session, org.id, role.uuid)
-    ] == ["medicine:read"]
+        p.name
+        for p in await RoleService.permissions(
+            db_session, org.id, role.uuid, actor_id=org.owner_id
+        )
+    ] == ["exchange:read"]
     updated = await RoleService.update(
-        db_session, org.id, role.uuid, {"name": "Updated", "description": None}
+        db_session,
+        org.id,
+        role.uuid,
+        {"name": "Updated", "description": None},
+        actor_id=org.owner_id,
     )
     assert updated.name == "Updated" and updated.description is None
-    await RoleService.delete(db_session, org.id, role.uuid)
-    assert await RoleService.member_roles(db_session, org.id, membership.uuid) == []
+    await RoleService.delete(db_session, org.id, role.uuid, actor_id=org.owner_id)
+    assert (
+        await RoleService.member_roles(
+            db_session, org.id, membership.uuid, actor_id=org.owner_id
+        )
+        == []
+    )
     assert (
         await db_session.scalars(
             select(RolePermission).where(RolePermission.role_id == role.id)
@@ -76,7 +94,7 @@ async def test_grant_changes_invalidate_warm_cache(
     owner, member, org, membership, role = setup_roles
     assert await PermissionService.granted(
         db_session, member.id, org.id, mock_redis
-    ) == {"medicine:read"}
+    ) == {"exchange:read"}
     old_version = org.rbac_version
     if change == "permissions":
         await RoleService.set_permissions(db_session, org.id, role.uuid, [], owner.id)
@@ -85,10 +103,14 @@ async def test_grant_changes_invalidate_warm_cache(
             db_session, org.id, membership.uuid, [], owner.id
         )
     elif change == "delete":
-        await RoleService.delete(db_session, org.id, role.uuid)
+        await RoleService.delete(db_session, org.id, role.uuid, actor_id=org.owner_id)
     else:
-        await OrganizationService.remove_member(db_session, org.id, member.id)
-        await OrganizationService.add_member(db_session, org.id, member.id)
+        await OrganizationService.remove_member(
+            db_session, org.id, member.id, actor_id=org.owner_id
+        )
+        await OrganizationService.add_member(
+            db_session, org.id, member.id, actor_id=org.owner_id
+        )
     assert org.rbac_version > old_version
     assert (
         await PermissionService.granted(db_session, member.id, org.id, mock_redis)
@@ -101,7 +123,7 @@ async def test_cache_hit_avoids_grant_query_and_has_ttl(
     db_session, setup_roles, mock_redis, monkeypatch
 ):
     _, member, org, _, _ = setup_roles
-    expected = {"medicine:read"}
+    expected = {"exchange:read"}
     assert (
         await PermissionService.granted(db_session, member.id, org.id, mock_redis)
         == expected
@@ -134,7 +156,7 @@ async def test_corrupt_cache_falls_back_to_database(
     await mock_redis.set(key, cached)
     assert await PermissionService.granted(
         db_session, member.id, org.id, mock_redis
-    ) == {"medicine:read"}
+    ) == {"exchange:read"}
 
 
 @pytest.mark.asyncio
@@ -144,7 +166,7 @@ async def test_redis_failure_falls_back_to_database(db_session, setup_roles):
     redis.get.side_effect = ConnectionError("unavailable")
     redis.set.side_effect = ConnectionError("unavailable")
     assert await PermissionService.granted(db_session, member.id, org.id, redis) == {
-        "medicine:read"
+        "exchange:read"
     }
 
 
@@ -177,14 +199,14 @@ async def test_legacy_and_mismatched_roles_never_grant_access(
     )
     assert await PermissionService.granted(
         db_session, member.id, org.id, mock_redis
-    ) == {"medicine:read"}
+    ) == {"exchange:read"}
 
 
 @pytest.mark.asyncio
 async def test_organization_deletion_cleans_roles(db_session, setup_roles):
     _, _, org, _, role = setup_roles
     role_id = role.id
-    await OrganizationService.delete(db_session, org)
+    await OrganizationService.delete(db_session, org, actor_id=org.owner_id)
     assert await db_session.get(Role, role_id) is None
     assert (await db_session.scalars(select(RolePermission))).all() == []
     assert (await db_session.scalars(select(UserRole))).all() == []
@@ -194,16 +216,18 @@ async def test_organization_deletion_cleans_roles(db_session, setup_roles):
 async def test_invalid_assignment_preserves_current_roles(db_session, setup_roles):
     owner, _, org, membership, role = setup_roles
     other = await OrganizationService.create(db_session, "Other", "other", owner)
-    foreign_role = await RoleService.create(db_session, other.id, "Staff")
+    foreign_role = await RoleService.create(
+        db_session, other.id, "Staff", actor_id=other.owner_id
+    )
     version = org.rbac_version
     for invalid in (uuid4(), foreign_role.uuid):
         with pytest.raises(NotFoundError):
             await RoleService.set_member_roles(
                 db_session, org.id, membership.uuid, [role.uuid, invalid], owner.id
             )
-        assert await RoleService.member_roles(db_session, org.id, membership.uuid) == [
-            role
-        ]
+        assert await RoleService.member_roles(
+            db_session, org.id, membership.uuid, actor_id=org.owner_id
+        ) == [role]
         assert org.rbac_version == version
 
 
@@ -212,7 +236,7 @@ async def test_cache_separates_users(db_session, setup_roles, mock_redis):
     owner, member, org, _, _ = setup_roles
     assert await PermissionService.granted(
         db_session, member.id, org.id, mock_redis
-    ) == {"medicine:read"}
+    ) == {"exchange:read"}
     # Owner bypass is evaluated outside the cache; no role grants are stored for them.
     assert (
         await PermissionService.granted(db_session, owner.id, org.id, mock_redis)
