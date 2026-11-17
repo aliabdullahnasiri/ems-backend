@@ -1,17 +1,17 @@
-# English (United States) translations for PROJECT.
-# Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+# English (United States) translations for EMS Project.
+# Copyright (C) 2026 Ali Abdullah Nasiri
+# This file is distributed under the same license as the EMS Project.
+# Ali Abdullah Nasiri <nasiri.aliabdullah@gmail.com>, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-09 14:32+0430\n"
-"PO-Revision-Date: 2026-11-09 14:32+0430\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Project-Id-Version: EMS Project - Exchange Management System v0.0.1\n"
+"Report-Msgid-Bugs-To: nasiri.aliabdullah@gmail.com\n"
+"POT-Creation-Date: 2026-11-17 11:45+0430\n"
+"PO-Revision-Date: 2026-11-17 11:52+0430\n"
+"Last-Translator: Ali Abdullah Nasiri <nasiri.aliabdullah@gmail.com>\n"
 "Language: en_US\n"
-"Language-Team: en_US <LL@li.org>\n"
+"Language-Team: English (United States) <nasiri.aliabdullah@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -20,17 +20,17 @@ msgstr ""
 
 #: src/app/api/dependencies/auth.py:103 src/app/api/dependencies/auth.py:130
 #: src/app/api/routers/auth/two_factor/verification.py:39
-#: src/app/services/organization.py:250
+#: src/app/services/organization.py:262
 msgid "auth:user_not_found"
 msgstr "User not found."
 
 #: src/app/api/dependencies/auth.py:139
 msgid "organization:selection_required"
-msgstr "Please select an organization."
+msgstr "Please select an organization to continue."
 
-#: src/app/api/dependencies/auth.py:233 src/app/services/organization.py:129
-#: src/app/services/organization.py:148 src/app/services/organization.py:165
-#: src/app/services/organization.py:499 src/app/services/role.py:59
+#: src/app/api/dependencies/auth.py:233 src/app/services/organization.py:131
+#: src/app/services/organization.py:150 src/app/services/organization.py:167
+#: src/app/services/organization.py:544 src/app/services/role.py:72
 msgid "organization:not_found"
 msgstr "Organization not found."
 
@@ -38,13 +38,13 @@ msgstr "Organization not found."
 msgid "health.ok"
 msgstr "The service is running normally."
 
-#: src/app/api/routers/organizations.py:38
+#: src/app/api/routers/organizations.py:37
 msgid "organization:join_request_queued"
-msgstr "Your request to join the organization has been queued."
+msgstr "Your request to join the organization has been submitted."
 
 #: src/app/api/routers/auth/passwords.py:34
 msgid "auth:password_reset_email_sent"
-msgstr "A password reset email has been sent."
+msgstr "Password reset instructions have been sent to your email address."
 
 #: src/app/api/routers/auth/passwords.py:56
 #: src/app/templates/emails/auth/password_reset_success.html:3
@@ -56,61 +56,61 @@ msgstr "Your password has been reset successfully."
 msgid "auth:password_change_successful"
 msgstr "Your password has been changed successfully."
 
-#: src/app/api/routers/auth/sessions.py:62
+#: src/app/api/routers/auth/sessions.py:64
 msgid "auth:registration_successful"
-msgstr "Registration completed successfully."
+msgstr "Your account has been created successfully."
 
-#: src/app/api/routers/auth/sessions.py:144
+#: src/app/api/routers/auth/sessions.py:150
 msgid "auth:two_factor_challenge_created"
-msgstr "Please complete two-factor authentication."
+msgstr "Two-factor verification is required to complete your login."
 
-#: src/app/api/routers/auth/sessions.py:169
+#: src/app/api/routers/auth/sessions.py:175
 msgid "auth:authentication_successful"
-msgstr "You have signed in successfully."
+msgstr "You have logged in successfully."
 
-#: src/app/api/routers/auth/sessions.py:205
+#: src/app/api/routers/auth/sessions.py:211
 msgid "auth:logout_successful"
-msgstr "You have signed out successfully."
+msgstr "You have logged out successfully."
 
-#: src/app/api/routers/auth/sessions.py:227
+#: src/app/api/routers/auth/sessions.py:233
 #: src/app/core/exceptions/authentication.py:31
 msgid "auth:invalid_refresh_token"
-msgstr "The refresh token is invalid."
+msgstr "Your refresh token is invalid or has expired."
 
-#: src/app/api/routers/auth/sessions.py:234
+#: src/app/api/routers/auth/sessions.py:240
 #: src/app/core/exceptions/authentication.py:17
 msgid "auth:invalid_token"
-msgstr "The authentication token is invalid."
+msgstr "Your authentication token is invalid."
 
-#: src/app/api/routers/auth/sessions.py:242
+#: src/app/api/routers/auth/sessions.py:248
 msgid "auth:access_token_refreshed"
-msgstr "Your access token has been refreshed."
+msgstr "Your access token has been refreshed successfully."
 
-#: src/app/api/routers/auth/sessions.py:267
+#: src/app/api/routers/auth/sessions.py:273
 msgid "auth:sessions_listed_successfully"
-msgstr "Sessions retrieved successfully."
+msgstr "Your sessions have been retrieved successfully."
 
-#: src/app/api/routers/auth/sessions.py:292
+#: src/app/api/routers/auth/sessions.py:298
 msgid "auth:session_revoked_successfully"
-msgstr "The session has been revoked."
+msgstr "The selected session has been revoked successfully."
 
-#: src/app/api/routers/auth/sessions.py:314
+#: src/app/api/routers/auth/sessions.py:320
 msgid "auth:all_sessions_revoked_successfully"
-msgstr "All sessions have been revoked."
+msgstr "All sessions have been revoked successfully."
 
 #: src/app/api/routers/auth/verification.py:33
 msgid "messages:email_verified_successfully"
-msgstr "Your email address has been verified."
+msgstr "Your email address has been verified successfully."
 
 #: src/app/api/routers/auth/verification.py:50
 #: src/app/api/routers/auth/verification.py:57
 msgid "messages:verification_email_sent"
-msgstr "A verification email has been sent."
+msgstr "A verification email has been sent to your email address."
 
 #: src/app/api/routers/auth/two_factor/verification.py:49
 #: src/app/core/exceptions/authentication.py:113
 msgid "auth:invalid_two_factor_code"
-msgstr "The two-factor authentication code is invalid."
+msgstr "The verification code you entered is incorrect."
 
 #: src/app/api/routers/auth/two_factor/verification.py:58
 msgid "auth:challenge_already_consumed"
@@ -118,23 +118,23 @@ msgstr "This verification request has already been used."
 
 #: src/app/api/routers/auth/two_factor/verification.py:82
 msgid "auth:two_factor_verified_successfully"
-msgstr "Two-factor authentication completed successfully."
+msgstr "Two-factor authentication has been verified successfully."
 
 #: src/app/api/routers/auth/two_factor/otp/router.py:37
 msgid "auth:otp_setup_started"
-msgstr "Email verification code setup has started."
+msgstr "One-time password setup has started."
 
 #: src/app/api/routers/auth/two_factor/otp/router.py:58
 msgid "auth:otp_resent_successfully"
-msgstr "The verification code has been sent again."
+msgstr "A new verification code has been sent successfully."
 
 #: src/app/api/routers/auth/two_factor/otp/router.py:83
 msgid "auth:otp_enabled_successfully"
-msgstr "Email verification codes have been enabled."
+msgstr "One-time password authentication has been enabled successfully."
 
 #: src/app/api/routers/auth/two_factor/otp/router.py:108
 msgid "auth:otp_disabled_successfully"
-msgstr "Email verification codes have been disabled."
+msgstr "One-time password authentication has been disabled successfully."
 
 #: src/app/api/routers/auth/two_factor/totp/router.py:39
 msgid "auth:two_factor_setup_started"
@@ -142,40 +142,40 @@ msgstr "Two-factor authentication setup has started."
 
 #: src/app/api/routers/auth/two_factor/totp/router.py:63
 msgid "auth:two_factor_enabled_successfully"
-msgstr "Two-factor authentication has been enabled."
+msgstr "Two-factor authentication has been enabled successfully."
 
 #: src/app/api/routers/auth/two_factor/totp/router.py:88
 msgid "auth:two_factor_disabled_successfully"
-msgstr "Two-factor authentication has been disabled."
+msgstr "Two-factor authentication has been disabled successfully."
 
 #: src/app/api/routers/auth/two_factor/totp/router.py:111
 msgid "auth:recovery_codes_regenerated_successfully"
-msgstr "New recovery codes have been generated."
+msgstr "Your recovery codes have been regenerated successfully."
 
 #: src/app/core/context/organization.py:37
 msgid "validation:scoped_orm_required"
-msgstr "Database operations must use the ORM within the current organization's scope."
+msgstr "This operation requires an organization-scoped database session."
 
 #: src/app/core/context/organization.py:45
-#: src/app/core/context/organization.py:81
+#: src/app/core/context/organization.py:83
 msgid "validation:immutable_ownership"
-msgstr "Record ownership cannot be changed."
+msgstr "The organization that owns this record cannot be changed."
 
 #: src/app/core/context/organization.py:48
 msgid "validation:scoped_bulk_update_required"
-msgstr "Bulk updates must stay within the current organization's scope."
+msgstr "Bulk updates must be restricted to the current organization."
 
-#: src/app/core/context/organization.py:114
+#: src/app/core/context/organization.py:116
 msgid "validation:posting_commit_forbidden"
-msgstr "A posting callback cannot commit the transaction."
+msgstr "Directly committing this posting operation is not allowed."
 
 #: src/app/core/exceptions/authentication.py:10
 msgid "auth:authentication_failed"
-msgstr "Authentication failed."
+msgstr "Authentication failed. Please try again."
 
 #: src/app/core/exceptions/authentication.py:24
 msgid "auth:invalid_token_identity"
-msgstr "The authentication token does not identify a valid user."
+msgstr "The authentication token contains invalid identity information."
 
 #: src/app/core/exceptions/authentication.py:38
 msgid "auth:token_revoked"
@@ -183,43 +183,43 @@ msgstr "This authentication token has been revoked."
 
 #: src/app/core/exceptions/authentication.py:45
 msgid "errors:password_reset_token_expired"
-msgstr "Your password reset link has expired."
+msgstr "Your password reset link has expired. Please request a new one."
 
 #: src/app/core/exceptions/authentication.py:53
 msgid "errors:email_verification_token_expired"
-msgstr "Your email verification link has expired."
+msgstr "Your email verification link has expired. Please request a new one."
 
 #: src/app/core/exceptions/authentication.py:61
 msgid "auth:session_not_found"
-msgstr "Session not found."
+msgstr "The requested session could not be found."
 
 #: src/app/core/exceptions/authentication.py:69
 msgid "errors:invalid_password_reset_token"
-msgstr "The password reset link is invalid."
+msgstr "This password reset link is invalid."
 
 #: src/app/core/exceptions/authentication.py:82
 msgid "auth:invalid_two_factor_challenge"
-msgstr "The two-factor authentication request is invalid."
+msgstr "This two-factor verification request is invalid."
 
 #: src/app/core/exceptions/authentication.py:89
 msgid "auth:two_factor_challenge_expired"
-msgstr "The two-factor authentication request has expired."
+msgstr "Your two-factor verification request has expired. Please try again."
 
 #: src/app/core/exceptions/authentication.py:97
 msgid "auth:two_factor_already_enabled"
-msgstr "Two-factor authentication is already enabled."
+msgstr "Two-factor authentication is already enabled on your account."
 
 #: src/app/core/exceptions/authentication.py:105
 msgid "auth:two_factor_setup_required"
-msgstr "Please set up two-factor authentication first."
+msgstr "Please complete the two-factor authentication setup first."
 
 #: src/app/core/exceptions/authentication.py:121
 msgid "auth:two_factor_not_enabled"
-msgstr "Two-factor authentication is not enabled."
+msgstr "Two-factor authentication is not enabled on your account."
 
 #: src/app/core/exceptions/authentication.py:129
 msgid "auth:invalid_password"
-msgstr "The password is incorrect."
+msgstr "The password you entered is incorrect."
 
 #: src/app/core/exceptions/authorization.py:10
 msgid "auth:permission_denied"
@@ -227,57 +227,57 @@ msgstr "You do not have permission to perform this action."
 
 #: src/app/core/exceptions/base.py:11
 msgid "errors:internal_error"
-msgstr "An internal error occurred. Please try again later."
+msgstr "An unexpected error occurred. Please try again later."
 
 #: src/app/core/exceptions/conflicts.py:10
 msgid "errors:conflict"
-msgstr "This action conflicts with existing data."
+msgstr "This operation conflicts with existing information."
 
 #: src/app/core/exceptions/handlers.py:52
 #: src/app/core/exceptions/resources.py:10
 msgid "errors:not_found"
-msgstr "The requested resource was not found."
+msgstr "The requested resource could not be found."
 
 #: src/app/core/exceptions/rate_limit.py:10
 msgid "auth:too_many_attempts"
-msgstr "Too many attempts. Please try again later."
+msgstr "Too many attempts. Please wait before trying again."
 
 #: src/app/core/exceptions/request.py:10
 msgid "request:bad_request"
-msgstr "The request is invalid."
+msgstr "The request is invalid. Please check your information and try again."
 
 #: src/app/core/exceptions/request.py:18
 msgid "health.database_unavailable"
-msgstr "The database is unavailable."
+msgstr "The database is currently unavailable."
 
 #: src/app/core/exceptions/request.py:23
 msgid "errors:database_context_unavailable"
-msgstr "The database connection context is unavailable."
+msgstr "The database context is unavailable."
 
 #: src/app/core/exceptions/request.py:28
 msgid "worker:event_loop_not_initialized"
-msgstr "The worker's event loop has not been initialized."
+msgstr "The background worker's event loop has not been initialized."
 
 #: src/app/core/exceptions/request.py:33
 msgid "worker:database_not_initialized"
-msgstr "The worker's database connection has not been initialized."
+msgstr "The background worker's database has not been initialized."
 
 #: src/app/core/exceptions/request.py:38
 msgid "auth:challenge_storage_failed"
-msgstr "The verification request could not be saved. Please try again."
+msgstr "Unable to save the verification request. Please try again."
 
 #: src/app/core/exceptions/request.py:43
 msgid "errors:serialization_failed"
-msgstr "The data could not be converted to the required format."
+msgstr "The operation could not be completed due to a data conflict. Please try again."
 
 #: src/app/core/exceptions/resources.py:18
 msgid "user:not_found"
-msgstr "User not found."
+msgstr "The requested user could not be found."
 
 #: src/app/core/exceptions/validation.py:13
 #: src/app/core/exceptions/validation.py:55
 msgid "validation:failed"
-msgstr "Please check the information you provided."
+msgstr "Validation failed. Please check the information you entered."
 
 #: src/app/core/exceptions/validation.py:40
 msgid "validation:required"
@@ -294,15 +294,15 @@ msgstr "This field cannot be empty."
 
 #: src/app/core/exceptions/validation.py:43
 msgid "validation:string_too_short"
-msgstr "The text is too short."
+msgstr "The entered text is too short."
 
 #: src/app/core/exceptions/validation.py:44
 msgid "validation:string_too_long"
-msgstr "The text is too long."
+msgstr "The entered text is too long."
 
 #: src/app/core/exceptions/validation.py:45
 msgid "validation:invalid_format"
-msgstr "The value is not in the required format."
+msgstr "The entered value has an invalid format."
 
 #: src/app/core/exceptions/validation.py:46
 #: src/app/core/exceptions/validation.py:47
@@ -312,12 +312,12 @@ msgstr "Please enter a valid UUID."
 #: src/app/core/exceptions/validation.py:48
 #: src/app/core/exceptions/validation.py:49
 msgid "validation:invalid_integer"
-msgstr "Please enter a whole number."
+msgstr "Please enter a valid whole number."
 
 #: src/app/core/exceptions/validation.py:50
 #: src/app/core/exceptions/validation.py:51
 msgid "validation:invalid_boolean"
-msgstr "Please enter true or false."
+msgstr "Please provide a valid true or false value."
 
 #: src/app/core/exceptions/validation.py:52
 #: src/app/core/exceptions/validation.py:53
@@ -326,19 +326,19 @@ msgstr "Please select a valid option."
 
 #: src/app/core/exceptions/validation.py:62
 msgid "auth:challenge_token_required"
-msgstr "A two-factor authentication challenge token is required."
+msgstr "A verification challenge token is required."
 
 #: src/app/core/exceptions/validation.py:69
 msgid "auth:auth_tokens_required"
-msgstr "Access and refresh tokens are required."
+msgstr "Authentication tokens are required."
 
 #: src/app/core/exceptions/validation.py:76
 msgid "auth:challenge_token_forbidden"
-msgstr "A two-factor authentication challenge token is not allowed here."
+msgstr "A verification challenge token is not allowed for this request."
 
 #: src/app/core/exceptions/validation.py:83
 msgid "value_error:invalid_timestamp"
-msgstr "Please provide a valid timestamp."
+msgstr "Please enter a valid date and time."
 
 #: src/app/core/exceptions/validation.py:90
 msgid "errors:email_must_contain_text_or_html_content"
@@ -346,11 +346,11 @@ msgstr "The email must contain plain text or HTML content."
 
 #: src/app/core/exceptions/validation.py:103
 msgid "validation:currency_precision"
-msgstr "The currency's number of decimal places is invalid."
+msgstr "The currency amount has too many decimal places."
 
 #: src/app/core/exceptions/validation.py:108
 msgid "validation:finite_amount_required"
-msgstr "The amount must be a finite number."
+msgstr "Please enter a valid, finite amount."
 
 #: src/app/core/exceptions/validation.py:113
 msgid "validation:amount_precision"
@@ -358,7 +358,7 @@ msgstr "The amount has too many decimal places."
 
 #: src/app/core/exceptions/validation.py:118
 msgid "validation:organization_ownership"
-msgstr "The organization's ownership cannot be overridden."
+msgstr "This record does not belong to the selected organization."
 
 #: src/app/core/exceptions/validation.py:123
 msgid "auth:unsupported_two_factor_method"
@@ -366,15 +366,15 @@ msgstr "This two-factor authentication method is not supported."
 
 #: src/app/core/exceptions/validation.py:128
 msgid "validation:decimal_strings_required"
-msgstr "Financial values must be provided as decimal strings."
+msgstr "Decimal values must be provided as text."
 
 #: src/app/core/exceptions/validation.py:133
 msgid "validation:retry_key_required"
-msgstr "Please provide a valid retry key."
+msgstr "A unique retry key is required for this operation."
 
 #: src/app/core/exceptions/validation.py:138
 msgid "validation:file_size"
-msgstr "The file size is invalid."
+msgstr "The uploaded file exceeds the allowed size limit."
 
 #: src/app/core/exceptions/validation.py:143
 msgid "validation:file_type"
@@ -382,21 +382,21 @@ msgstr "This file type is not supported."
 
 #: src/app/core/security/manager.py:173
 msgid "auth:session_expired_or_revoked"
-msgstr "Your session has expired or been revoked. Please sign in again."
+msgstr "Your session has expired or has been revoked. Please log in again."
 
 #: src/app/schemas/user/request/profile.py:33
 #: src/app/schemas/user/request/profile.py:68
 #: src/app/schemas/user/request/profile.py:95 src/app/services/user.py:74
 #: src/app/services/user.py:98
 msgid "email:email_already_exists"
-msgstr "This email address is already in use."
+msgstr "This email address is already registered."
 
 #: src/app/schemas/user/request/profile.py:42
 #: src/app/schemas/user/request/profile.py:81
 #: src/app/schemas/user/request/profile.py:112 src/app/services/user.py:69
 #: src/app/services/user.py:120
 msgid "user_name:user_name_already_exists"
-msgstr "This username is already in use."
+msgstr "This username is already taken. Please choose another one."
 
 #: src/app/services/organization.py:51
 msgid "organization:already_a_member"
@@ -404,122 +404,125 @@ msgstr "You are already a member of this organization."
 
 #: src/app/services/organization.py:60
 msgid "organization:owner_unavailable"
-msgstr "The organization's owner is unavailable."
+msgstr "The organization owner is currently unavailable."
 
 #: src/app/services/organization.py:64
 #: src/app/templates/emails/organization/join_request.html:3
 #: src/app/templates/emails/organization/join_request.html:7
 msgid "emails:organization_join_request_subject"
-msgstr "New request to join your organization"
+msgstr "New Organization Membership Request"
 
 #: src/app/services/organization.py:65
 msgid "emails:organization_join_request_text"
-msgstr "{username} ({email}, user ID: {user_id}) has requested to join {organization} (organization ID: {organization_uuid}). Please review this request."
+msgstr "A user has requested to join your organization. Please review the membership request."
 
-#: src/app/services/organization.py:95 src/app/services/organization.py:187
+#: src/app/services/organization.py:95 src/app/services/organization.py:196
 msgid "organization:slug_already_exists"
-msgstr "This organization slug is already in use."
+msgstr "An organization with this URL identifier already exists. Please choose another one."
 
-#: src/app/services/organization.py:201 src/app/services/organization.py:329
-#: src/app/services/organization.py:537
+#: src/app/services/organization.py:210 src/app/services/organization.py:342
+#: src/app/services/organization.py:590 src/app/services/organization.py:627
 msgid "organization:membership_not_found"
-msgstr "Organization membership not found."
+msgstr "The requested organization membership could not be found."
 
-#: src/app/services/organization.py:294 src/app/services/organization.py:569
+#: src/app/services/organization.py:307 src/app/services/organization.py:629
 msgid "organization:owner_membership_required"
-msgstr "The organization's owner must remain a member."
+msgstr "You must be an owner of this organization to perform this action."
 
-#: src/app/services/organization.py:374
+#: src/app/services/organization.py:404
 msgid "branch:not_found"
-msgstr "Branch not found."
+msgstr "The requested branch could not be found."
 
-#: src/app/services/organization.py:441
+#: src/app/services/organization.py:477
 msgid "organization:conflict"
-msgstr "This action conflicts with the organization's existing data."
+msgstr "This organization operation conflicts with existing information."
 
-#: src/app/services/role.py:48 src/app/services/role.py:232
+#: src/app/services/role.py:61 src/app/services/role.py:271
 msgid "role:not_found"
-msgstr "Role not found."
+msgstr "The requested role could not be found."
 
-#: src/app/services/role.py:64
+#: src/app/services/role.py:77
 msgid "role:system_protected"
-msgstr "This system role is protected and cannot be changed."
+msgstr "This system-protected role cannot be modified."
 
-#: src/app/services/role.py:73 src/app/services/role.py:85
+#: src/app/services/role.py:86 src/app/services/role.py:98
 msgid "role:conflict"
-msgstr "This action conflicts with an existing role."
+msgstr "This role conflicts with an existing role or permission."
 
-#: src/app/services/role.py:169
+#: src/app/services/role.py:204
 msgid "permission:unknown"
-msgstr "The specified permission is not recognized."
+msgstr "The requested permission is not recognized."
 
-#: src/app/services/role.py:218
+#: src/app/services/role.py:257
 msgid "role:inactive_member"
-msgstr "Roles can only be assigned to active members."
+msgstr "Roles cannot be assigned to an inactive organization member."
 
-#: src/app/services/tenant_operations.py:182
+#: src/app/services/tenant_operations.py:183
 msgid "validation:retry_payload_conflict"
-msgstr "This retry key was already used with different request data."
+msgstr "This request was already submitted with different information."
 
 #: src/app/services/user.py:170
 msgid "errors:invalid_email_verification_token"
-msgstr "The email verification link is invalid."
+msgstr "This email verification link is invalid."
 
-#: src/app/services/user.py:232
+#: src/app/services/user.py:226
 msgid "organization:transfer_before_user_delete"
 msgstr "Transfer ownership of your organizations before deleting your account."
 
 #: src/app/services/auth/email_verification.py:75
 msgid "emails:verify_email_subject"
-msgstr "Verify your email address"
+msgstr "Verify Your Email Address"
 
 #: src/app/services/auth/email_verification.py:111
 msgid "emails:email_verified_success_subject"
-msgstr "Your email address has been verified"
+msgstr "Your Email Address Has Been Verified"
 
 #: src/app/services/auth/password_reset.py:85
 msgid "emails:password_reset_subject"
-msgstr "Reset your password"
+msgstr "Reset Your Password"
 
 #: src/app/services/auth/password_reset.py:119
 msgid "emails:password_reset_success_subject"
-msgstr "Your password has been reset"
+msgstr "Your Password Has Been Reset Successfully"
 
-#: src/app/services/auth/service.py:88
+#: src/app/services/auth/service.py:89 src/app/services/auth/service.py:92
 msgid "auth:invalid_credentials"
-msgstr "The email address or password is incorrect."
+msgstr "Incorrect login credentials. Please try again."
 
-#: src/app/services/auth/service.py:140
+#: src/app/services/auth/service.py:144
+#: src/app/templates/emails/auth/welcome.html:3
 msgid "emails:welcome_subject"
-msgstr "Welcome to SarafiMS"
+msgstr "Welcome! Your Account Has Been Created"
 
-#: src/app/services/auth/service.py:141
+#: src/app/services/auth/service.py:145
 msgid "emails:welcome_text"
-msgstr "Welcome to SarafiMS! Thank you for creating an account."
+msgstr "Welcome! Thank you for creating an account. We are glad to have you with us."
 
-#: src/app/services/auth/service.py:168
+#: src/app/services/auth/service.py:172
 msgid "auth:invalid_current_password"
 msgstr "Your current password is incorrect."
 
-#: src/app/services/auth/two_factor/otp.py:56
+#: src/app/services/auth/two_factor/otp.py:59
 msgid "auth:otp_sent_successfully"
-msgstr "A verification code has been sent."
+msgstr "A one-time verification code has been sent successfully."
 
-#: src/app/services/auth/two_factor/otp.py:66
+#: src/app/services/auth/two_factor/otp.py:69
 msgid "emails:otp_verify_subject"
-msgstr "Your two-factor authentication code"
+msgstr "Your Two-Factor Authentication Code"
 
-#: src/app/services/auth/two_factor/otp.py:67
+#: src/app/services/auth/two_factor/otp.py:70
 msgid "emails:otp_verify_text"
 msgstr "Use the code in this email to complete two-factor authentication setup. The code expires in 15 minutes."
 
+#: src/app/templates/emails/auth/welcome.html:37
 #: src/app/templates/emails/base.html:7 src/app/templates/emails/base.html:52
+#: src/app/templates/emails/base.html:79
 msgid "brand:name"
 msgstr "SarafiMS"
 
 #: src/app/templates/emails/base.html:56
 msgid "brand:description"
-msgstr "Exchange management system"
+msgstr "Exchange Management System"
 
 #: src/app/templates/emails/base.html:80
 msgid "email:all_rights_reserved"
@@ -532,11 +535,11 @@ msgstr "This is an automated email. Please do not reply."
 #: src/app/templates/emails/auth/email_verified.html:3
 #: src/app/templates/emails/auth/email_verified.html:14
 msgid "auth:email_verified_success"
-msgstr "Your email address has been verified"
+msgstr "Your Email Has Been Verified Successfully"
 
 #: src/app/templates/emails/auth/email_verified.html:25
 msgid "auth:thank_you_for_verifying_your_email"
-msgstr "Thank you for verifying your email address."
+msgstr "Thank you for verifying your email address!"
 
 #: src/app/templates/emails/auth/email_verified.html:36
 msgid "auth:your_account_is_now_fully_activated"
@@ -544,32 +547,32 @@ msgstr "Your account is now fully activated."
 
 #: src/app/templates/emails/auth/email_verified.html:37
 msgid "auth:you_can_now_access_all_features"
-msgstr "You can now access all SarafiMS features."
+msgstr "You can now access all features available to your account."
 
 #: src/app/templates/emails/auth/email_verified.html:67
 msgid "auth:go_to_app"
-msgstr "Open the app"
+msgstr "Go to Application"
 
 #: src/app/templates/emails/auth/email_verified.html:81
 msgid "auth:if_you_have_any_questions_contact_support"
-msgstr "If you have any questions, please contact support."
+msgstr "If you have any questions or need assistance, please contact support."
 
 #: src/app/templates/emails/auth/otp_verify.html:3
 #: src/app/templates/emails/auth/otp_verify.html:14
 msgid "auth:verify_two_factor_authentication"
-msgstr "Verify two-factor authentication"
+msgstr "Verify Your Two-Factor Authentication"
 
 #: src/app/templates/emails/auth/otp_verify.html:25
 msgid "auth:thank_you_for_enhancing_account_security"
-msgstr "Thank you for helping keep your account secure."
+msgstr "Thank you for taking an extra step to protect your account."
 
 #: src/app/templates/emails/auth/otp_verify.html:36
 msgid "auth:please_use_the_following_otp_setup_code_to_complete_registration"
-msgstr "Use the following verification code to complete your setup."
+msgstr "Enter the following one-time code to complete your two-factor authentication setup."
 
 #: src/app/templates/emails/auth/otp_verify.html:79
 msgid "auth:this_code_will_expire_in_15_minutes"
-msgstr "This code expires in 15 minutes."
+msgstr "This code will expire in 15 minutes."
 
 #: src/app/templates/emails/auth/otp_verify.html:90
 msgid "auth:if_you_did_not_request_this_setup_please_ignore_this_email"
@@ -578,57 +581,58 @@ msgstr "If you did not request this setup, please ignore this email."
 #: src/app/templates/emails/auth/password_reset.html:3
 #: src/app/templates/emails/auth/password_reset.html:14
 msgid "auth:reset_your_password"
-msgstr "Reset your password"
+msgstr "Reset Your Password"
 
 #: src/app/templates/emails/auth/password_reset.html:25
 msgid "auth:password_reset_request_received"
-msgstr "We received a request to reset your password."
+msgstr "We received a request to reset your account password."
 
 #: src/app/templates/emails/auth/password_reset.html:36
 msgid "auth:click_button_to_reset_password"
-msgstr "Click the button below to reset your password."
+msgstr "Click the button below to set a new password."
 
 #: src/app/templates/emails/auth/password_reset.html:37
 msgid "auth:reset_link_expires_in_60_minutes"
-msgstr "This reset link expires in 60 minutes."
+msgstr "This password reset link will expire in 60 minutes."
 
 #: src/app/templates/emails/auth/password_reset.html:67
 msgid "auth:reset_password"
-msgstr "Reset password"
+msgstr "Reset Password"
 
 #: src/app/templates/emails/auth/password_reset.html:81
 #: src/app/templates/emails/auth/verify_email.html:82
 msgid "auth:if_button_does_not_work_copy_link"
-msgstr "If the button does not work, copy and paste the link below into your browser."
+msgstr "If the button does not work, copy the link below and paste it into your browser."
 
 #: src/app/templates/emails/auth/password_reset.html:107
 msgid "auth:if_did_not_request_reset_ignore_email"
-msgstr "If you did not request a password reset, please ignore this email."
+msgstr "If you did not request a password reset, you can ignore this email. Your password will remain unchanged."
 
 #: src/app/templates/emails/auth/password_reset_success.html:25
 msgid "auth:password_has_been_successfully_updated"
-msgstr "Your password has been updated successfully."
+msgstr "Your account password has been updated successfully."
 
 #: src/app/templates/emails/auth/password_reset_success.html:36
 msgid "auth:you_can_now_log_in_with_your_new_password"
-msgstr "You can now sign in with your new password."
+msgstr "You can now log in using your new password."
 
 #: src/app/templates/emails/auth/password_reset_success.html:66
 msgid "auth:go_to_application"
-msgstr "Open the app"
+msgstr "Go to Application"
 
 #: src/app/templates/emails/auth/password_reset_success.html:80
 msgid "auth:if_did_not_perform_action_contact_support"
-msgstr "If you did not make this change, please contact support immediately."
+msgstr "If you did not make this change, contact support immediately."
 
 #: src/app/templates/emails/auth/verify_email.html:3
 #: src/app/templates/emails/auth/verify_email.html:14
 msgid "auth:verify_your_email"
-msgstr "Verify your email address"
+msgstr "Verify Your Email Address"
 
 #: src/app/templates/emails/auth/verify_email.html:25
+#: src/app/templates/emails/auth/welcome.html:25
 msgid "auth:thank_you_for_creating_account"
-msgstr "Thank you for creating a SarafiMS account."
+msgstr "Thank you for creating an account with us!"
 
 #: src/app/templates/emails/auth/verify_email.html:26
 msgid "auth:please_verify_your_email_to_activate_account"
@@ -640,23 +644,23 @@ msgstr "Click the button below to verify your email address."
 
 #: src/app/templates/emails/auth/verify_email.html:38
 msgid "auth:verification_link_expires_in_30_minutes"
-msgstr "This verification link expires in 30 minutes."
+msgstr "This verification link will expire in 30 minutes."
 
 #: src/app/templates/emails/auth/verify_email.html:68
 msgid "auth:verify_email"
-msgstr "Verify email address"
+msgstr "Verify Email Address"
 
 #: src/app/templates/emails/auth/verify_email.html:108
 msgid "auth:if_did_not_create_account_ignore_email"
-msgstr "If you did not create this account, please ignore this email."
+msgstr "If you did not create this account, you can ignore this email."
 
 #: src/app/templates/emails/organization/join_request.html:10
 msgid "emails:organization_join_request_intro"
-msgstr "A user has requested to join your organization."
+msgstr "A user has requested to join your organization. Please review the details below."
 
 #: src/app/templates/emails/organization/join_request.html:14
 msgid "emails:organization_name"
-msgstr "Organization name"
+msgstr "Organization Name"
 
 #: src/app/templates/emails/organization/join_request.html:15
 msgid "emails:organization_uuid"
@@ -664,17 +668,17 @@ msgstr "Organization ID"
 
 #: src/app/templates/emails/organization/join_request.html:16
 msgid "emails:requester_username"
-msgstr "Requester's username"
+msgstr "Requester's Username"
 
 #: src/app/templates/emails/organization/join_request.html:17
 msgid "emails:requester_email"
-msgstr "Requester's email address"
+msgstr "Requester's Email Address"
 
 #: src/app/templates/emails/organization/join_request.html:18
 msgid "emails:requester_user_id"
-msgstr "Requester's user ID"
+msgstr "Requester's User ID"
 
 #: src/app/templates/emails/organization/join_request.html:21
 msgid "emails:organization_join_request_review"
-msgstr "Please review this request before granting access to your organization."
+msgstr "Please review this membership request and approve or reject it."
 
