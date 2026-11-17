@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     and .env files.
     """
 
-    APP_NAME: str = "DawaMIS API"
-    APP_DESCRIPTION: str = "Backend API for DawaMIS pharmacy management system."
+    APP_NAME: str = "SarafiMS API"
+    APP_DESCRIPTION: str = "Backend API for SarafiMS exchange management system."
     APP_VERSION: str = "1.0.0"
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
@@ -32,8 +32,8 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = "your-smtp-password"
     SMTP_USE_TLS: bool = True
 
-    MAIL_FROM_EMAIL: str = "noreply@dawamis.com"
-    MAIL_FROM_NAME: str = "Dawamis"
+    MAIL_FROM_EMAIL: str = "no-reply@example.com"
+    MAIL_FROM_NAME: str = "SarafiMS"
 
     # JWT
     JWT_SECRET_KEY: str = "dev-jwt-secret"
