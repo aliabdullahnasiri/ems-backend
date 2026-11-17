@@ -72,11 +72,7 @@ async def test_otp_verify_success(
     base_secret = SecretEncryption.decrypt(pending_secret_encrypted)
     valid_code = otp_provider._derive_code(base_secret)
 
-    # For verify to return True, the user must have two_factor_enabled=True or we must mock it
-    # because the current implementation of verify is:
-    # if not user.two_factor_enabled or not user.two_factor_pending_secret_encrypted:
-    #     return False
-    mock_user.two_factor_enabled = True
+    await otp_provider.enable(db_session, mock_user, valid_code)
 
     is_valid = await otp_provider.verify(db_session, mock_user, valid_code)
     assert is_valid is True
@@ -143,3 +139,27 @@ async def test_otp_resend_success(
 
     # Should have been called twice (once for setup, once for resend)
     assert mock_mail["send_template"].await_count == 2
+
+
+@pytest.mark.asyncio
+async def test_otp_enable_requires_setup(otp_provider, db_session, mock_user):
+    from app.core.exceptions.authentication import TwoFactorSetupRequiredError
+
+    with pytest.raises(TwoFactorSetupRequiredError):
+        await otp_provider.enable(db_session, mock_user, "123456")
+    assert mock_user.two_factor_enabled is False
+
+
+@pytest.mark.asyncio
+async def test_resend_preserves_enabled_secret(
+    otp_provider, db_session, mock_user, mock_mail
+):
+    await otp_provider.setup(db_session, mock_user)
+    code = mock_mail["send_template"].await_args.kwargs["otp_code"]
+    await otp_provider.enable(db_session, mock_user, code)
+    encrypted = mock_user.two_factor_secret_encrypted
+    await otp_provider.resend(db_session, mock_user)
+    assert mock_user.two_factor_secret_encrypted == encrypted
+    assert mock_user.two_factor_pending_secret_encrypted is None
+    resent = mock_mail["send_template"].await_args.kwargs["otp_code"]
+    assert await otp_provider.verify(db_session, mock_user, resent)
