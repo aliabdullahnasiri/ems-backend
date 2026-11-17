@@ -96,6 +96,12 @@ class TwoFactorService:
         return codes
 
     @classmethod
+    async def send_login_code(cls, db: AsyncSession, user: User) -> None:
+        """Deliver a login code for email OTP; authenticator codes are local."""
+        if user.two_factor_enabled and user.two_factor_method == "otp":
+            await cls._get_provider("otp").resend(db, user)
+
+    @classmethod
     async def verify(
         cls,
         db: AsyncSession,
