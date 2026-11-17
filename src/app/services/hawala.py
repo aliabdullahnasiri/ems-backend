@@ -53,11 +53,11 @@ class HawalaService:
         return (
             "paid"
             if "paid" in kinds
-            else "cancelled"
-            if "cancelled" in kinds
-            else "pending"
-            if "confirmed" in kinds
-            else "draft"
+            else (
+                "cancelled"
+                if "cancelled" in kinds
+                else "pending" if "confirmed" in kinds else "draft"
+            )
         )
 
     @staticmethod
@@ -423,9 +423,11 @@ class HawalaService:
             c,
             -fee,
             -fee_book,
-            "hawala_customer_fee"
-            if terms.customer_fee_earned_at == "confirm"
-            else f"hawala:{hawala.id}:deferred_fee",
+            (
+                "hawala_customer_fee"
+                if terms.customer_fee_earned_at == "confirm"
+                else f"hawala:{hawala.id}:deferred_fee"
+            ),
             "income" if terms.customer_fee_earned_at == "confirm" else "payable",
         )
         await HawalaService.agent_leg(
@@ -448,9 +450,11 @@ class HawalaService:
             p,
             afee,
             afee_book,
-            "hawala_agent_fee"
-            if terms.agent_fee_earned_at == "confirm"
-            else f"hawala:{hawala.id}:prepaid_fee",
+            (
+                "hawala_agent_fee"
+                if terms.agent_fee_earned_at == "confirm"
+                else f"hawala:{hawala.id}:prepaid_fee"
+            ),
             "expense" if terms.agent_fee_earned_at == "confirm" else "clearing",
         )
         entry = await LedgerService._write(
@@ -901,11 +905,15 @@ class HawalaService:
         settlement_status = (
             "none"
             if not active
-            else "settled"
-            if all(Decimal(o.remaining_amount) == 0 for o in active)
-            else "partial"
-            if any(Decimal(o.settled_amount) for o in active)
-            else "outstanding"
+            else (
+                "settled"
+                if all(Decimal(o.remaining_amount) == 0 for o in active)
+                else (
+                    "partial"
+                    if any(Decimal(o.settled_amount) for o in active)
+                    else "outstanding"
+                )
+            )
         )
         refunds = list(
             await db.scalars(
@@ -934,22 +942,24 @@ class HawalaService:
             reference=hawala.reference,
             shop_id=hawala.shop_id,
             state=state,
-            payout_status="paid"
-            if state == "paid"
-            else "pending"
-            if state == "pending"
-            else "not_payable",
+            payout_status=(
+                "paid"
+                if state == "paid"
+                else "pending" if state == "pending" else "not_payable"
+            ),
             settlement_status=settlement_status,
             draft=HawalaCreateRequest.model_validate(hawala.details),
-            receipt=HawalaReceiptData.model_validate(confirmed.details["receipt"])
-            if confirmed
-            else None,
+            receipt=(
+                HawalaReceiptData.model_validate(confirmed.details["receipt"])
+                if confirmed
+                else None
+            ),
             refund_due=exact(due, currency.precision),
             refund_paid=exact(paid, currency.precision),
             refund_remaining=exact(remaining, currency.precision),
-            refund_currency=currency.code
-            if cancelled and hawala.direction == "outgoing"
-            else None,
+            refund_currency=(
+                currency.code if cancelled and hawala.direction == "outgoing" else None
+            ),
             obligations=obligations,
             history=history,
         )
