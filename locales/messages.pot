@@ -542,7 +542,7 @@ msgid "auth:your_account_is_now_fully_activated"
 msgstr ""
 
 #: src/app/templates/emails/auth/email_verified.html:37
-msgid "auth:you_can_now_access_all_features_of_dawamis"
+msgid "auth:you_can_now_access_all_features"
 msgstr ""
 
 #: src/app/templates/emails/auth/email_verified.html:67
@@ -626,7 +626,7 @@ msgid "auth:verify_your_email"
 msgstr ""
 
 #: src/app/templates/emails/auth/verify_email.html:25
-msgid "auth:thank_you_for_creating_dawamis_account"
+msgid "auth:thank_you_for_creating_account"
 msgstr ""
 
 #: src/app/templates/emails/auth/verify_email.html:26

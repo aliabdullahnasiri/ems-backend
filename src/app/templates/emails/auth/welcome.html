@@ -1,6 +1,6 @@
 {% extends "emails/base.html" %}
 
-{% block title %}Welcome to Dawamis{% endblock %}
+{% block title %}{{ T("emails:welcome_subject") }}{% endblock %}
 
 {% block content %}
 
@@ -22,7 +22,7 @@
         color: #4b5563;
     "
 >
-    Thank you for creating your Dawamis account.
+    {{ T("auth:thank_you_for_creating_account") }}
     We're happy to have you with us.
 </p>
 
@@ -34,9 +34,8 @@
         color: #4b5563;
     "
 >
-    Dawamis helps you manage your pharmacy operations,
-    including medicines, inventory, purchases, sales,
-    customers, employees, and more.
+    {{ T("brand:name") }} helps you manage your exchange operations,
+    customers, accounts, and financial records.
 </p>
 
 <table

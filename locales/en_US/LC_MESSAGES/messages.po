@@ -491,11 +491,11 @@ msgstr "The email address or password is incorrect."
 
 #: src/app/services/auth/service.py:140
 msgid "emails:welcome_subject"
-msgstr "Welcome to Dawamis"
+msgstr "Welcome to SarafiMS"
 
 #: src/app/services/auth/service.py:141
 msgid "emails:welcome_text"
-msgstr "Welcome to Dawamis! Thank you for creating an account."
+msgstr "Welcome to SarafiMS! Thank you for creating an account."
 
 #: src/app/services/auth/service.py:168
 msgid "auth:invalid_current_password"
@@ -515,7 +515,7 @@ msgstr "Use the code in this email to complete two-factor authentication setup. 
 
 #: src/app/templates/emails/base.html:7 src/app/templates/emails/base.html:52
 msgid "brand:name"
-msgstr "Dawamis"
+msgstr "SarafiMS"
 
 #: src/app/templates/emails/base.html:56
 msgid "brand:description"
@@ -543,8 +543,8 @@ msgid "auth:your_account_is_now_fully_activated"
 msgstr "Your account is now fully activated."
 
 #: src/app/templates/emails/auth/email_verified.html:37
-msgid "auth:you_can_now_access_all_features_of_dawamis"
-msgstr "You can now access all Dawamis features."
+msgid "auth:you_can_now_access_all_features"
+msgstr "You can now access all SarafiMS features."
 
 #: src/app/templates/emails/auth/email_verified.html:67
 msgid "auth:go_to_app"
@@ -627,8 +627,8 @@ msgid "auth:verify_your_email"
 msgstr "Verify your email address"
 
 #: src/app/templates/emails/auth/verify_email.html:25
-msgid "auth:thank_you_for_creating_dawamis_account"
-msgstr "Thank you for creating a Dawamis account."
+msgid "auth:thank_you_for_creating_account"
+msgstr "Thank you for creating a SarafiMS account."
 
 #: src/app/templates/emails/auth/verify_email.html:26
 msgid "auth:please_verify_your_email_to_activate_account"
