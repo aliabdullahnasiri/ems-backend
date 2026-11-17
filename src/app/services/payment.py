@@ -368,9 +368,9 @@ class PaymentService:
                     address=shop.address,
                     phone=settings.phone if settings else None,
                     logo_reference=settings.logo_reference if settings else None,
-                    preferred_language=settings.preferred_language
-                    if settings
-                    else "fa",
+                    preferred_language=(
+                        settings.preferred_language if settings else "fa"
+                    ),
                     receipt_footer=settings.receipt_footer if settings else None,
                 ),
                 cashier_id=context.user_id,
