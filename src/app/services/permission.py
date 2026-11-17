@@ -104,6 +104,7 @@ class PermissionService:
                 )
             ).all()
         )
+
         if redis is not None:
             try:
                 await redis.set(
@@ -113,4 +114,5 @@ class PermissionService:
                 )
             except RedisError:
                 pass
+
         return granted
