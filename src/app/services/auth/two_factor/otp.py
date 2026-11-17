@@ -6,7 +6,10 @@ import time
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.encryption import SecretEncryption
-from app.core.exceptions.authentication import InvalidTwoFactorCodeError
+from app.core.exceptions.authentication import (
+    InvalidTwoFactorCodeError,
+    TwoFactorSetupRequiredError,
+)
 from app.core.i18n.types import T
 from app.enums.security import TwoFactorMethod
 from app.models.user import User
@@ -76,32 +79,39 @@ class OTPProvider(TwoFactorProvider):
         """
         Verifies the provided OTP code against the encrypted base secret.
         """
-        if not user.two_factor_enabled or not user.two_factor_pending_secret_encrypted:
+        if not user.two_factor_enabled or not user.two_factor_secret_encrypted:
             return False
 
         # Decrypt the base secret and derive the current valid code
-        base_secret = SecretEncryption.decrypt(user.two_factor_pending_secret_encrypted)
-        return self._derive_code(base_secret) == code
+        base_secret = SecretEncryption.decrypt(user.two_factor_secret_encrypted)
+        return hmac.compare_digest(self._derive_code(base_secret), code)
 
     async def enable(self, db: AsyncSession, user: User, code: str) -> None:
         """
         Finalizes OTP enablement by verifying the code and promoting the secret.
         """
         if not user.two_factor_pending_secret_encrypted:
-            return
+            raise TwoFactorSetupRequiredError()
 
         # Decrypt the pending base secret and derive the code
         base_secret = SecretEncryption.decrypt(user.two_factor_pending_secret_encrypted)
 
-        if self._derive_code(base_secret) != code:
+        if not hmac.compare_digest(self._derive_code(base_secret), code):
             raise InvalidTwoFactorCodeError()
 
-        user.two_factor_secret_encrypted = None
+        user.two_factor_secret_encrypted = user.two_factor_pending_secret_encrypted
         user.two_factor_pending_secret_encrypted = None
         user.two_factor_enabled = True
 
     async def resend(self, db: AsyncSession, user: User) -> None:
         """
-        Resends the OTP code using the pending secret.
+        Resend a code without replacing an active or pending setup secret.
         """
-        await self.setup(db, user)
+        encrypted = (
+            user.two_factor_secret_encrypted
+            if user.two_factor_enabled
+            else user.two_factor_pending_secret_encrypted
+        )
+        if user.two_factor_method != TwoFactorMethod.OTP or not encrypted:
+            raise TwoFactorSetupRequiredError()
+        await self.send(user, SecretEncryption.decrypt(encrypted))
