@@ -13,7 +13,6 @@ from app.models.contact import Contact, ContactAttachment
 from app.schemas.contact.data import ContactData
 from app.schemas.contact.request import ContactCreateRequest, ContactUpdateRequest
 from app.services.finance import LedgerService
-from app.services.organization import OrganizationService
 from app.services.organization_context import OrganizationContext
 from app.services.tenant_operations import TenantOperations
 
@@ -39,9 +38,7 @@ class ContactService:
     async def identity_access(db: AsyncSession, context: OrganizationContext) -> bool:
         """Identity details require the restricted settings:update permission."""
         try:
-            await OrganizationService.require_permissions(
-                db, context.user_id, context.organization_id, ("settings:update",)
-            )
+            await TenantOperations.authorize(db, context, "settings:update")
             return True
         except AuthorizationError:
             return False
