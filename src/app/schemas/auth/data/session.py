@@ -15,3 +15,4 @@ class SessionData(BaseDataModel):
     user_agent: str | None
     last_used_at: datetime | None
     expires_at: datetime
+    is_current: bool = False
