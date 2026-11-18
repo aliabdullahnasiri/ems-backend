@@ -44,11 +44,9 @@ async def create_shop(
     data: ShopCreate, db: DBSession, context: CurrentOrganizationContext
 ):
     """Create a shop in the selected organization (settings:update)."""
-    return {
-        "data": shop_data(
-            await ShopService.create(db, context, data.name, data.address)
-        )
-    }
+    shop = await ShopService.create(db, context, data.name, data.address)
+    await db.commit()
+    return {"data": shop_data(shop)}
 
 
 @router.get("/shops")
@@ -101,13 +99,11 @@ async def update_shop(
     context: CurrentOrganizationContext,
 ):
     """Edit or deactivate a shop; history is retained (settings:update)."""
-    return {
-        "data": shop_data(
-            await ShopService.update(
-                db, context, shop_uuid, data.model_dump(exclude_unset=True)
-            )
-        )
-    }
+    shop = await ShopService.update(
+        db, context, shop_uuid, data.model_dump(exclude_unset=True)
+    )
+    await db.commit()
+    return {"data": shop_data(shop)}
 
 
 @router.post("/files", status_code=201)
