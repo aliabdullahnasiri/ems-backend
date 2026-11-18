@@ -188,7 +188,8 @@ async def test_lifecycle(client, identity, db_session):
 
 
 @pytest.mark.asyncio
-async def test_membership_and_isolation(client, identity, db_session):
+@pytest.mark.parametrize("identifier", ["user_id", "user_uuid"])
+async def test_membership_and_isolation(client, identity, db_session, identifier):
     org = await create(client)
     other = await create(client, "other")
     path = f"/api/v1/organizations/{org['uuid']}"
@@ -197,18 +198,32 @@ async def test_membership_and_isolation(client, identity, db_session):
     )
     db_session.add(outsider)
     await db_session.commit()
-    response = await client.post(path + "/members", json={"user_id": outsider.id})
+    member_payload = {
+        identifier: str(outsider.uuid) if identifier == "user_uuid" else outsider.id
+    }
+    response = await client.post(path + "/members", json=member_payload)
     assert response.status_code == 201, response.text
-    member_uuid = response.json()["data"]["uuid"]
+    member = response.json()["data"]
+    assert member["user_uuid"] == str(outsider.uuid)
+    member_uuid = member["uuid"]
+
+    response = await client.get(path + "/members")
+    assert response.status_code == 200, response.text
+    listed = next(
+        item for item in response.json()["data"] if item["uuid"] == member_uuid
+    )
+    assert listed["user_uuid"] == str(outsider.uuid)
     assert (
         await client.patch(
             f"/api/v1/organizations/{other['uuid']}/members/{member_uuid}",
             json={"is_active": False},
         )
     ).status_code == 404
-    assert (
-        await client.patch(path + f"/members/{member_uuid}", json={"is_active": False})
-    ).status_code == 200
+    response = await client.patch(
+        path + f"/members/{member_uuid}", json={"is_active": False}
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["data"]["user_uuid"] == str(outsider.uuid)
     assert (await client.patch(path, json={"owner_id": outsider.id})).status_code == 404
     assert (
         await client.patch(path + f"/members/{member_uuid}", json={"is_active": True})
