@@ -414,7 +414,7 @@ msgstr "New Organization Membership Request"
 
 #: src/app/services/organization.py:65
 msgid "emails:organization_join_request_text"
-msgstr "A user has requested to join your organization. Please review the membership request."
+msgstr "{username} ({email}, user ID: {user_id}) has requested to join {organization} ({organization_uuid}). Please review the membership request."
 
 #: src/app/services/organization.py:95 src/app/services/organization.py:196
 msgid "organization:slug_already_exists"
