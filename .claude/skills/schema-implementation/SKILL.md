@@ -1,13 +1,13 @@
 ---
 name: schema-implementation
-description: 'Guide for creating Pydantic schemas in the Dawamis backend. Enforces strict categorization (request, response, data), asynchronous validation patterns for database checks, and consistent naming conventions for API contracts.'
+description: 'Guide for creating Pydantic schemas in the SarafiMS backend. Enforces strict categorization (request, response, data), asynchronous validation patterns for database checks, and consistent naming conventions for API contracts.'
 license: MIT
 allowed-tools: Bash
 ---
 
 # Schema Implementation Skill
 
-This skill guides the creation of Pydantic schemas for the Dawamis backend. Schemas define the API contracts, ensuring strict validation of incoming requests and consistent shaping of outgoing responses.
+This skill guides the creation of Pydantic schemas for the SarafiMS backend. Schemas define the API contracts, ensuring strict validation of incoming requests and consistent shaping of outgoing responses.
 
 ## Schema Architecture
 
