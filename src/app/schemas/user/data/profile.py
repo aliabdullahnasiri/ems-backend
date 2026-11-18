@@ -20,6 +20,8 @@ class UserData(BaseDataModel):
     last_name: str | None
     user_name: str
     email: EmailStr
+    two_factor_enabled: bool = False
+    two_factor_method: str | None = None
     birthday: date | None
     created_at: datetime
     updated_at: datetime
