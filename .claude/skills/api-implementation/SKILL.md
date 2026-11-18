@@ -1,13 +1,13 @@
 ---
 name: api-implementation
-description: 'Guide for creating API endpoints in the Dawamis backend. Ensures correct routing, request validation via schemas, dependency injection using Annotated aliases, and strict separation between the API layer and business logic services.'
+description: 'Guide for creating API endpoints in the SarafiMS backend. Ensures correct routing, request validation via schemas, dependency injection using Annotated aliases, and strict separation between the API layer and business logic services.'
 license: MIT
 allowed-tools: Bash
 ---
 
 # API Implementation Skill
 
-This skill guides the creation of API endpoints in the Dawamis backend. The API layer is responsible for routing, request validation (via schemas), dependency injection, and coordinating service calls.
+This skill guides the creation of API endpoints in the SarafiMS backend. The API layer is responsible for routing, request validation (via schemas), dependency injection, and coordinating service calls.
 
 ## API Architecture
 
