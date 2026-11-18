@@ -5,6 +5,7 @@ from redis.asyncio import Redis
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.core.exceptions import AuthorizationError, ConflictError, NotFoundError
 from app.core.i18n.types import T
@@ -249,7 +250,7 @@ class OrganizationService:
 
     @staticmethod
     async def add_member(
-        db: AsyncSession, organization_id: int, user_id: int, *, actor_id: int
+        db: AsyncSession, organization_id: int, user_id: int | UUID, *, actor_id: int
     ) -> OrganizationUser:
         """
         Add a user to an organization.
@@ -258,12 +259,20 @@ class OrganizationService:
             db, organization_id, actor_id, "organizations.members.manage"
         )
         await OrganizationService._get_by_id(db, organization_id)
-        if await db.get(User, user_id) is None:
+        user = (
+            await db.scalar(select(User).where(User.uuid == user_id))
+            if isinstance(user_id, UUID)
+            else await db.get(User, user_id)
+        )
+        if user is None:
             raise NotFoundError(message=T("auth:user_not_found"))
+        user_id = user.id
         # Check if membership already exists
         existing = (
             await db.execute(
-                select(OrganizationUser).where(
+                select(OrganizationUser)
+                .options(joinedload(OrganizationUser.user))
+                .where(
                     OrganizationUser.organization_id == organization_id,
                     OrganizationUser.user_id == user_id,
                 )
@@ -280,6 +289,7 @@ class OrganizationService:
         db.add(membership)
         await OrganizationService.commit(db)
         await db.refresh(membership)
+        await db.refresh(membership, ["user"])
         return membership
 
     @staticmethod
@@ -565,6 +575,7 @@ class OrganizationService:
             (
                 await db.scalars(
                     select(OrganizationUser)
+                    .options(joinedload(OrganizationUser.user))
                     .where(
                         OrganizationUser.organization_id == organization_id,
                     )
@@ -639,6 +650,7 @@ class OrganizationService:
             )
         await PermissionService.invalidate(db, organization.id)
         await db.commit()
+        await db.refresh(membership, ["user"])
         return membership
 
     @staticmethod
