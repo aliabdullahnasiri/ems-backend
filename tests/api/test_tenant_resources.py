@@ -1,3 +1,6 @@
+from contextlib import asynccontextmanager
+from unittest.mock import AsyncMock
+
 import pytest
 
 from app.services.organization import OrganizationService
@@ -7,6 +10,39 @@ from tests.api.test_organizations import create
 async def select_org(client, org):
     response = await client.post(f"/api/v1/auth/organizations/{org['uuid']}/select")
     assert response.status_code == 200, response.text
+
+
+@pytest.mark.asyncio
+async def test_shop_writes_commit_the_route_session(
+    client, identity, db_session, monkeypatch
+):
+    org = await create(client, "shop-persistence")
+    await select_org(client, org)
+
+    @asynccontextmanager
+    async def separate_middleware_session():
+        yield AsyncMock()
+
+    monkeypatch.setattr(
+        "app.api.middleware.database.SessionLocal", separate_middleware_session
+    )
+    commit = AsyncMock(wraps=db_session.commit)
+    monkeypatch.setattr(db_session, "commit", commit)
+
+    created = await client.post("/api/v1/shops", json={"name": "صرافی کابل"})
+    assert created.status_code == 201, created.text
+    commit.assert_awaited_once()
+    shop = created.json()["data"]
+    listed = await client.get("/api/v1/shops")
+    assert listed.status_code == 200, listed.text
+    assert listed.json()["data"] == [shop]
+
+    updated = await client.patch(
+        f"/api/v1/shops/{shop['uuid']}", json={"is_active": False}
+    )
+    assert updated.status_code == 200, updated.text
+    assert commit.await_count == 2
+    assert updated.json()["data"]["is_active"] is False
 
 
 @pytest.mark.asyncio
