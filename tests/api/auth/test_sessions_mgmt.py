@@ -15,6 +15,7 @@ async def test_get_sessions(client: AsyncClient, fake_session):
     sessions = response.json()["data"]
     assert isinstance(sessions, list)
     assert len(sessions) > 0
+    assert sum(item["is_current"] for item in sessions) == 1
 
 
 @pytest.mark.asyncio
