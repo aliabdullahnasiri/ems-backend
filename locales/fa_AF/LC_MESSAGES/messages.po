@@ -414,7 +414,7 @@ msgstr "درخواست جدید عضویت در سازمان"
 
 #: src/app/services/organization.py:65
 msgid "emails:organization_join_request_text"
-msgstr "یک کاربر درخواست عضویت در سازمان شما را فرستاده است. لطفاً درخواست را بررسی کنید."
+msgstr "{username} ({email}، شناسهٔ کاربر: {user_id}) درخواست عضویت در {organization} ({organization_uuid}) را فرستاده است. لطفاً درخواست را بررسی کنید."
 
 #: src/app/services/organization.py:95 src/app/services/organization.py:196
 msgid "organization:slug_already_exists"
