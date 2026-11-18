@@ -74,7 +74,7 @@ def test_session_data_missing_required():
 
 def test_two_factor_setup_data_valid():
     data = {
-        "provisioning_uri": "otpauth://totp/Dawamis:user@example.com?secret=SECRET&issuer=Dawamis",
+        "provisioning_uri": "otpauth://totp/Example:user@example.com?secret=SECRET&issuer=Example",
         "qr_code": "base64_qr_code",
     }
     model = TOTPSetupData(**data)
