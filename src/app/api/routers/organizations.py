@@ -145,7 +145,7 @@ async def add_member(
     """Add an existing user to this organization."""
     organization = await OrganizationService._get_by_uuid(db, organization_uuid)
     member = await OrganizationService.add_member(
-        db, organization.id, request.user_id, actor_id=session.user_id
+        db, organization.id, request.user_identifier, actor_id=session.user_id
     )
     return MembershipResponse(data=MembershipData.model_validate(member))
 

@@ -1,4 +1,5 @@
 from typing import Annotated, Self
+from uuid import UUID
 
 from pydantic import Field, JsonValue, StringConstraints, model_validator
 
@@ -38,7 +39,21 @@ class UpdateOrganizationRequest(BaseRequestModel):
 
 
 class AddMemberRequest(BaseRequestModel):
-    user_id: int = Field(gt=0)
+    user_id: int | None = Field(default=None, gt=0)
+    user_uuid: UUID | None = None
+
+    @model_validator(mode="after")
+    def validate_identifier(self) -> Self:
+        if (self.user_id is None) == (self.user_uuid is None):
+            raise ValueError("Provide exactly one of user_uuid or user_id")
+        return self
+
+    @property
+    def user_identifier(self) -> UUID | int:
+        if self.user_uuid is not None:
+            return self.user_uuid
+        assert self.user_id is not None
+        return self.user_id
 
 
 class UpdateMemberRequest(BaseRequestModel):
