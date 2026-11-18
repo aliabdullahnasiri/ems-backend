@@ -1,6 +1,6 @@
 ---
 name: test-implementation
-description: 'Create or update Dawamis backend pytest tests for API endpoints, services, schemas, and models using the existing async, database, authentication, mail, and Redis fixtures. Use when implementing regression coverage or changing tests in this repository.'
+description: 'Create or update SarafiMS backend pytest tests for API endpoints, services, schemas, and models using the existing async, database, authentication, mail, and Redis fixtures. Use when implementing regression coverage or changing tests in this repository.'
 ---
 
 # Test Implementation Skill
