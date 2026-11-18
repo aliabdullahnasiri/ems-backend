@@ -132,7 +132,8 @@ Settings are defined in [src/app/core/settings.py](src/app/core/settings.py). En
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `APP_NAME` | `EMS API` | API title and Celery application name |
+| `PROJECT_NAME` | `SarafiMS` | Project name shown in authenticator apps |
+| `APP_NAME` | `SarafiMS API` | API title and Celery application name |
 | `APP_DESCRIPTION` | Backend API description | OpenAPI description |
 | `APP_VERSION` | `1.0.0` | OpenAPI application version |
 | `APP_ENV` | `development` | Environment setting |
