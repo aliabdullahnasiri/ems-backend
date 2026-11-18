@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import JsonValue
+from pydantic import AliasPath, Field, JsonValue
 
 from app.schemas.base.model import Model
 
@@ -23,6 +23,7 @@ class MembershipData(Model):
     uuid: UUID
     organization_id: int
     user_id: int
+    user_uuid: UUID = Field(validation_alias=AliasPath("user", "uuid"))
     is_active: bool
     created_at: datetime
     updated_at: datetime
