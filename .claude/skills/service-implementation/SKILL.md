@@ -1,13 +1,13 @@
 ---
 name: service-implementation
-description: 'Guide for creating business logic services in the Dawamis backend. Enforces async-first I/O, standard transaction patterns, domain-driven error handling with localization, and comprehensive unit test coverage.'
+description: 'Guide for creating business logic services in the SarafiMS backend. Enforces async-first I/O, standard transaction patterns, domain-driven error handling with localization, and comprehensive unit test coverage.'
 license: MIT
 allowed-tools: Bash
 ---
 
 # Service Implementation Skill
 
-This skill guides the creation of business logic services in the Dawamis backend. Services are the primary layer for reusable business rules, coordinating persistence, security, and background work.
+This skill guides the creation of business logic services in the SarafiMS backend. Services are the primary layer for reusable business rules, coordinating persistence, security, and background work.
 
 ## Service Architecture
 
