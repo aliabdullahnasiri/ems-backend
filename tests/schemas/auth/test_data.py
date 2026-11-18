@@ -4,9 +4,7 @@ from uuid import UUID
 import pytest
 
 from app.core.exceptions import AppValidationError
-from app.core.exceptions.validation import (
-    AuthTokensRequiredError,
-)
+from app.core.exceptions.validation import AuthTokensRequiredError
 from app.schemas.auth.data import (
     LoginData,
     RecoveryCodesData,
