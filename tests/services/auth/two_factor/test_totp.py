@@ -3,6 +3,7 @@ import pytest
 from cryptography.fernet import InvalidToken
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.exceptions.authentication import (
     InvalidTwoFactorCodeError,
     TwoFactorAlreadyEnabledError,
@@ -13,13 +14,14 @@ from app.services.auth.two_factor import TwoFactorService
 
 
 @pytest.mark.asyncio
-async def test_setup_success(db_session: AsyncSession):
+async def test_setup_success(db_session: AsyncSession, monkeypatch: pytest.MonkeyPatch):
     """
     Test the successful setup of two-factor authentication.
 
     Verifies that the provisioning URI and QR code are generated,
     and that the secret is stored in a pending state.
     """
+    monkeypatch.setattr(settings, "PROJECT_NAME", "Example Exchange")
     user = User(
         email="test@example.com",
         user_name="testuser",
@@ -30,7 +32,7 @@ async def test_setup_success(db_session: AsyncSession):
 
     result = await TwoFactorService.setup(db_session, user)
 
-    assert "provisioning_uri" in result
+    assert pyotp.parse_uri(result["provisioning_uri"]).issuer == "Example Exchange"
     assert "qr_code" in result
     assert result["qr_code"].startswith("data:image/png;base64,")
     assert user.two_factor_pending_secret_encrypted is not None
