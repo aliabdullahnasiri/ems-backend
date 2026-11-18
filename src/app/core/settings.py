@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     and .env files.
     """
 
+    PROJECT_NAME: str = "SarafiMS"
     APP_NAME: str = "SarafiMS API"
     APP_DESCRIPTION: str = "Backend API for SarafiMS exchange management system."
     APP_VERSION: str = "1.0.0"
