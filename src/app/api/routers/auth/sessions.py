@@ -27,6 +27,7 @@ from app.schemas.auth import (
     RevokeSessionResponse,
     SessionsResponse,
 )
+from app.schemas.auth.data.session import SessionData
 from app.schemas.user import UserData
 from app.services.auth import AuthService, JWTService
 from app.services.auth.rate_limit import AuthRateLimiter
@@ -271,7 +272,12 @@ async def get_sessions(
 
     return SessionsResponse(
         message=T("auth:sessions_listed_successfully"),
-        data=sessions,
+        data=[
+            SessionData.model_validate(item).model_copy(
+                update={"is_current": item.uuid == session.uuid}
+            )
+            for item in sessions
+        ],
     )
 
 
