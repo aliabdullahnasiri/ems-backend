@@ -44,7 +44,7 @@ class TOTPProvider(TwoFactorProvider):
         totp = pyotp.TOTP(secret)
         uri = totp.provisioning_uri(
             name=user.email,
-            issuer_name=settings.APP_NAME,
+            issuer_name=settings.PROJECT_NAME,
         )
 
         image = qrcode.make(uri)
